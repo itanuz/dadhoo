@@ -3,14 +3,15 @@
  */
 package com.dadhoo.fragments;
 
-import java.util.Locale;
-
 import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
+import android.widget.Toast;
 
 import com.dadhoo.R;
 
@@ -31,15 +32,14 @@ public class AlbumFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_planet, container, false);
-        int i = getArguments().getInt(ARG_PLANET_NUMBER);
-        String planet = getResources().getStringArray(R.array.planets_array)[i];
-
-        int imageId = getResources().getIdentifier(planet.toLowerCase(Locale.getDefault()),
-                        "drawable", getActivity().getPackageName());
+        View rootView = inflater.inflate(R.layout.fragment_album_list, container, false);
         GridView gridView = (GridView) rootView.findViewById(R.id.image);
         gridView.setAdapter(new ImageAdapter(getActivity()));
-//        getActivity().setTitle(planet);
+        gridView.setOnItemClickListener(new OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+                Toast.makeText(getActivity(), "" + position, Toast.LENGTH_SHORT).show();
+            }
+        });
         return gridView;
     }
 }
