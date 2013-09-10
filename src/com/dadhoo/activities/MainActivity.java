@@ -118,7 +118,7 @@ public class MainActivity extends Activity {
 
         FragmentManager fragmentManager = getFragmentManager();
         Fragment fragment = new AlbumFragment();
-		fragmentManager.beginTransaction().replace(R.id.content_frame, fragment ).commit();
+		fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
     }
 
     @Override

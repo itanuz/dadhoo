@@ -4,6 +4,7 @@
 package com.dadhoo.fragments;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,9 +12,9 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
-import android.widget.Toast;
 
 import com.dadhoo.R;
+import com.dadhoo.activities.EventsListActivity;
 
 /**
  * @author gaecarme
@@ -37,7 +38,17 @@ public class AlbumFragment extends Fragment {
         gridView.setAdapter(new ImageAdapter(getActivity()));
         gridView.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-                Toast.makeText(getActivity(), "" + position, Toast.LENGTH_SHORT).show();
+                //TODO: check here if there is space or not checking the framework contain 
+            	
+            	boolean useFragment = false;
+            	
+            	if (useFragment) { //multi-pane
+            		//update the fragment contained in the getActivity()
+            	} else {//one-pane call the activity
+	            	Intent intent = new Intent(getActivity(), EventsListActivity.class);
+	            	intent.putExtra("position", position);
+	            	startActivity(intent);
+            	}
             }
         });
         return gridView;
