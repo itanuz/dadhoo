@@ -26,10 +26,6 @@ import com.dadhoo.activities.EventsListActivity;
 public class AlbumFragment extends Fragment {
     public static final String ARG_PLANET_NUMBER = "planet_number";
 
-    public AlbumFragment() {
-        // Empty constructor required for fragment subclasses
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
@@ -39,9 +35,7 @@ public class AlbumFragment extends Fragment {
         gridView.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
                 //TODO: check here if there is space or not checking the framework contain 
-            	
             	boolean useFragment = false;
-            	
             	if (useFragment) { //multi-pane
             		//update the fragment contained in the getActivity()
             	} else {//one-pane call the activity
