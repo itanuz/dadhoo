@@ -1,24 +1,8 @@
-/*
- * Copyright 2013 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.dadhoo.activities;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -37,6 +21,7 @@ import android.widget.Toast;
 
 import com.dadhoo.R;
 import com.dadhoo.fragments.AlbumFragment;
+import com.dadhoo.fragments.EventListFragment;
 
 public class MainActivity extends Activity {
     private DrawerLayout mDrawerLayout;
@@ -45,7 +30,7 @@ public class MainActivity extends Activity {
 
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
-    private String[] mPlanetTitles;
+    private String[] mLinkTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,15 +38,14 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         mTitle = mDrawerTitle = getTitle();
-        mPlanetTitles = getResources().getStringArray(R.array.planets_array);
+        mLinkTitle = getResources().getStringArray(R.array.drawer_link_array);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
         // set a custom shadow that overlays the main content when the drawer opens
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         // set up the drawer's list view with items and click listener
-        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
-                R.layout.drawer_list_item, mPlanetTitles));
+        mDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, mLinkTitle));
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
         // enable ActionBar app icon to behave as action to toggle nav drawer
@@ -88,10 +72,14 @@ public class MainActivity extends Activity {
             }
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
-
+        
         FragmentManager fragmentManager = getFragmentManager();
-        Fragment fragment = new AlbumFragment();
-		fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        if (null == fragmentManager.findFragmentByTag("FRAG_EVENTS")) {
+        	fragmentTransaction.add(R.id.content_frame, new EventListFragment(), "FRAG_EVENTS");
+        }	
+//   		fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
     }
 
     @Override
@@ -139,15 +127,32 @@ public class MainActivity extends Activity {
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            selectItem(position);            
+        	 mDrawerList.setItemChecked(position, true);
+             setTitle(mLinkTitle[position]);
+             FragmentManager fragmentManager = getFragmentManager();
+             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+             switch (position) {
+	     		case 0://replace the current fragment with a new event fragment
+	     			break;
+	     		case 1://replace the current fragment with a new album fragment
+	     			break;
+	     		case 2:
+	     			fragmentTransaction.replace(R.id.content_frame, new EventListFragment());
+	     			fragmentTransaction.addToBackStack(null);
+	     	        fragmentTransaction.commit();
+	     			break;
+	     		case 3:
+	     			fragmentTransaction.replace(R.id.content_frame, new AlbumFragment());
+	     			fragmentTransaction.addToBackStack(null);
+	     	        fragmentTransaction.commit();
+	     		case 4: //replace the current fragment with the setting fragment
+	     			break;
+	     		default:
+	     			break;
+     		}
+             
+             mDrawerLayout.closeDrawer(mDrawerList);           
         }
-    }
-
-    private void selectItem(int position) {
-        // update selected item and title, then close the drawer
-        mDrawerList.setItemChecked(position, true);
-        setTitle(mPlanetTitles[position]);
-        mDrawerLayout.closeDrawer(mDrawerList);
     }
 
     @Override

@@ -22,9 +22,10 @@ public class EventsListActivity extends Activity {
 		
 		FragmentManager fragmentMgr = getFragmentManager();
 		FragmentTransaction fragmentTx = fragmentMgr.beginTransaction();
-		if (null == fragmentMgr.findFragmentByTag("FRAG_2")) {
-			fragmentTx.add(R.id.event_list, new EventListFragment(), "FRAG_2");
+		if (null == fragmentMgr.findFragmentByTag("FRAG_EVENTS_FILTERED")) {
+			fragmentTx.add(R.id.event_list, new EventListFragment(), "FRAG_EVENTS_FILTERED");
 		}
+		fragmentTx.addToBackStack(null);
 		fragmentTx.commit();
 		setupActionBar();
 	}
