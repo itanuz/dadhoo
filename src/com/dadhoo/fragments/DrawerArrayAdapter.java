@@ -21,13 +21,13 @@ import com.dadhoo.R;
 public class DrawerArrayAdapter extends ArrayAdapter<String>{
     private final Activity context;
     private final String[] presidents;
-    private final Integer[] imageIds;
+    private final Integer[] iconIds;
 
     public DrawerArrayAdapter(Activity context, String[] linkText, Integer[] iconIds) {
         super(context, R.layout.event_row, linkText);
         this.context = context;
         this.presidents = linkText;
-        this.imageIds = iconIds;
+        this.iconIds = iconIds;
     }
 
     @Override
@@ -36,17 +36,15 @@ public class DrawerArrayAdapter extends ArrayAdapter<String>{
         Log.d("DrawerArrayAdapter",String.valueOf(position));
 
         LayoutInflater inflater = context.getLayoutInflater();
-        View rowView= inflater.inflate(R.layout.event_row, null, true);
+        View rowView= inflater.inflate(R.layout.drawer_list_item, null, true);
 
         //---get a reference to all the views on the xml layout---
-        TextView txtTitle = (TextView) rowView.findViewById(R.id.txtPresidentName);
-        TextView txtDescription = (TextView) rowView.findViewById(R.id.txtDescription);
-        ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
+        TextView txtTitle = (TextView) rowView.findViewById(R.id.link_drawer_text);
+        ImageView imageView = (ImageView) rowView.findViewById(R.id.icon_drawer);
 
         //---customize the content of each row based on position---
         txtTitle.setText(presidents[position]);
-        txtDescription.setText(presidents[position] + "...Somedescriptions here...");
-        imageView.setImageResource(imageIds[position]);
+        imageView.setImageResource(iconIds[position]);
         return rowView;
     }
 }

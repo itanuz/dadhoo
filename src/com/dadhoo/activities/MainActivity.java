@@ -6,6 +6,7 @@ import android.app.FragmentTransaction;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
@@ -21,12 +22,13 @@ import android.widget.Toast;
 
 import com.dadhoo.R;
 import com.dadhoo.fragments.AlbumFragment;
+import com.dadhoo.fragments.DrawerArrayAdapter;
 import com.dadhoo.fragments.EventListFragment;
 
 public class MainActivity extends Activity {
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
-    private ActionBarDrawerToggle mDrawerToggle;
+    private ActionBarDrawerToggle mDrawerListener;
 
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
@@ -44,17 +46,19 @@ public class MainActivity extends Activity {
 
         // set a custom shadow that overlays the main content when the drawer opens
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
-        // set up the drawer's list view with items and click listener
-        mDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, mLinkTitle));
+        
+        mDrawerList.setAdapter(new DrawerArrayAdapter(this, mLinkTitle, iconIds));
+        
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
         // enable ActionBar app icon to behave as action to toggle nav drawer
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setHomeButtonEnabled(true);
-
+        getActionBar().setBackgroundDrawable(new ColorDrawable(0xffff15));
+        
         // ActionBarDrawerToggle ties together the the proper interactions
         // between the sliding drawer and the action bar app icon
-        mDrawerToggle = new ActionBarDrawerToggle(
+        mDrawerListener = new ActionBarDrawerToggle(
                 this,                  /* host Activity */
                 mDrawerLayout,         /* DrawerLayout object */
                 R.drawable.ic_drawer,  /* nav drawer image to replace 'Up' caret */
@@ -71,7 +75,7 @@ public class MainActivity extends Activity {
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
         };
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
+        mDrawerLayout.setDrawerListener(mDrawerListener);
         
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -102,7 +106,7 @@ public class MainActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
          // The action bar home/up action should open or close the drawer.
          // ActionBarDrawerToggle will take care of this.
-        if (mDrawerToggle.onOptionsItemSelected(item)) {
+        if (mDrawerListener.onOptionsItemSelected(item)) {
             return true;
         }
         // Handle action buttons
@@ -170,13 +174,21 @@ public class MainActivity extends Activity {
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         // Sync the toggle state after onRestoreInstanceState has occurred.
-        mDrawerToggle.syncState();
+        mDrawerListener.syncState();
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         // Pass any configuration change to the drawer toggls
-        mDrawerToggle.onConfigurationChanged(newConfig);
+        mDrawerListener.onConfigurationChanged(newConfig);
     }
+    
+    Integer[] iconIds = {
+            R.drawable.ic_content_new,
+            R.drawable.ic_content_new,
+            R.drawable.ic_collections_view_as_list,
+            R.drawable.ic_collections_view_as_grid,
+            R.drawable.ic_collections_view_as_grid,
+    };
 }
