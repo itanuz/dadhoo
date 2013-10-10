@@ -16,7 +16,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -136,16 +135,18 @@ public class MainActivity extends Activity {
              FragmentManager fragmentManager = getFragmentManager();
              FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
              switch (position) {
-	     		case 0://replace the current fragment with a new event fragment
+	     		case 0://new event
 	     			break;
-	     		case 1://replace the current fragment with a new album fragment
+	     		case 1://new album
+	     			Intent intent = new Intent(getBaseContext(), NewAlbumActivity.class);
+	     			startActivity(intent);
 	     			break;
-	     		case 2:
+	     		case 2://event list
 	     			fragmentTransaction.replace(R.id.content_frame, new EventListFragment());
 	     			fragmentTransaction.addToBackStack(null);
 	     	        fragmentTransaction.commit();
 	     			break;
-	     		case 3:
+	     		case 3://album list
 	     			fragmentTransaction.replace(R.id.content_frame, new AlbumFragment());
 	     			fragmentTransaction.addToBackStack(null);
 	     	        fragmentTransaction.commit();

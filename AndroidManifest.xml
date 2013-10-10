@@ -18,16 +18,22 @@
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name="com.dadhoo.activities.EventsListActivity"
             android:label="@string/title_activity_events_list"
-            android:parentActivityName="com.dadhoo.activities.MainActivity">
+            android:parentActivityName="com.dadhoo.activities.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.dadhoo.activities.MainActivity" />
         </activity>
+        <activity
+            android:name="com.dadhoo.activities.NewAlbumActivity"
+            android:label="@string/new_album_actionbar_title" >
+        </activity>
     </application>
+
 </manifest>
