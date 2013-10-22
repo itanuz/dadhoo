@@ -16,10 +16,10 @@ import com.dadhoo.R;
  * @author gaecarme
  *
  */
-public class ImageAdapter extends BaseAdapter {
+public class AlbumImageAdapter extends BaseAdapter {
     private Context mContext;
 
-    public ImageAdapter(Context c) {
+    public AlbumImageAdapter(Context c) {
         mContext = c;
     }
 

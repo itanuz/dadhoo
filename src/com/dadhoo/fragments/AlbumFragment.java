@@ -29,7 +29,7 @@ public class AlbumFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_album_list, container, false);
         GridView gridView = (GridView) rootView.findViewById(R.id.image);
-        gridView.setAdapter(new ImageAdapter(getActivity()));
+        gridView.setAdapter(new AlbumImageAdapter(getActivity()));
         gridView.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
                 //TODO: check here if there is space or not checking the framework contain 

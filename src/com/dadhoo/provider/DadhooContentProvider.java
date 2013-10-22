@@ -23,8 +23,8 @@ import com.dadhoo.database.DadhooDbHelper;
  */
 public class DadhooContentProvider extends ContentProvider {
 
-    private static final int ALBUMS = 1;
-    private static final int ALBUM_ID = 2;
+    private static final int ALBUMS = 1;//all albums
+    private static final int ALBUM_ID = 2;//only one album
     
     private static UriMatcher sUriMatcher;
     static {
@@ -95,14 +95,12 @@ public class DadhooContentProvider extends ContentProvider {
         switch (sUriMatcher.match(uri)) {
 			case ALBUMS:
 				// verifyValues(values);
-				
-				// insert the initialValues into a new database row
 				SQLiteDatabase db = mOpenDbHelper.getWritableDatabase();
 				long rowId = db.insert(DadhooDbHelper.ALBUM_TABLE_NAME, DadhooDB.Albums.ALBUM_NAME, values);
 				if (rowId > 0) {
-					Uri videoURi = ContentUris.withAppendedId(DadhooDB.Albums.CONTENT_URI, rowId);
-					getContext().getContentResolver().notifyChange(videoURi, null);
-					return videoURi;
+					Uri albumURi = ContentUris.withAppendedId(DadhooDB.Albums.CONTENT_URI, rowId);
+					getContext().getContentResolver().notifyChange(albumURi, null);
+					return albumURi;
 				}
 				
 				throw new SQLException("Failed to insert row into " + uri);
