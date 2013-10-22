@@ -1,20 +1,41 @@
 package com.dadhoo.activities;
 
-import com.dadhoo.R;
-
-import android.os.Bundle;
 import android.app.Activity;
+import android.content.ContentValues;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.support.v4.app.NavUtils;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import com.dadhoo.R;
+import com.dadhoo.provider.DadhooDB;
 
 public class NewAlbumActivity extends Activity {
+	
+	private EditText mAlbumTitleText;
+	private EditText mAlbumBabyName;
+	private EditText mAlbumBirthLocation;
+	private EditText mAlbumMotherName;
+	private EditText mAlbumFatherName;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_new_album);
+		
+		mAlbumTitleText = (EditText) findViewById(R.id.album_title);
+		mAlbumBabyName = (EditText) findViewById(R.id.album_baby_name);
+		mAlbumBirthLocation = (EditText) findViewById(R.id.album_birth_location);
+		mAlbumMotherName = (EditText) findViewById(R.id.album_mother_name);
+		mAlbumFatherName = (EditText) findViewById(R.id.album_father_name);
+		
 		setupActionBar();
+		
+		
 	}
 
 	/**
@@ -35,18 +56,31 @@ public class NewAlbumActivity extends Activity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case android.R.id.home:
-			// This ID represents the Home or Up button. In the case of this
-			// activity, the Up button is shown. Use NavUtils to allow users
-			// to navigate up one level in the application structure. For
-			// more details, see the Navigation pattern on Android Design:
-			//
-			// http://developer.android.com/design/patterns/navigation.html#up-vs-back
-			//
-			NavUtils.navigateUpFromSameTask(this);
-			return true;
-		}
+			case android.R.id.home:
+				NavUtils.navigateUpFromSameTask(this);
+				return true;
+			case R.id.action_done:
+				Uri uriInserted = insertAlbum();
+				if(uriInserted != null) {
+					Intent intent = new Intent(this, MainActivity.class);
+					Toast.makeText(this, "Album created", Toast.LENGTH_LONG).show();
+					startActivity(intent);
+				}
+				return true;
+			}
 		return super.onOptionsItemSelected(item);
+	}
+
+	private Uri insertAlbum() {
+		ContentValues contentValues = new ContentValues();
+		contentValues.put(DadhooDB.Albums.TITLE, mAlbumTitleText.getText().toString());
+		contentValues.put(DadhooDB.Albums.BABYNAME, mAlbumBabyName.getText().toString());
+		contentValues.put(DadhooDB.Albums.BIRTHLOCATION, mAlbumBirthLocation.getText().toString());
+		contentValues.put(DadhooDB.Albums.FATHERNAME, mAlbumFatherName.getText().toString());
+		contentValues.put(DadhooDB.Albums.MOTHERNAME, mAlbumMotherName.getText().toString());
+		
+		return getContentResolver().insert(DadhooDB.Albums.CONTENT_URI, contentValues);
+		
 	}
 
 }

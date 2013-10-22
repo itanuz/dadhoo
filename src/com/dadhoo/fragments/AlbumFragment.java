@@ -24,11 +24,9 @@ import com.dadhoo.activities.EventsListActivity;
  * Fragment that appears in the "content_frame", shows an Album
  */
 public class AlbumFragment extends Fragment {
-    public static final String ARG_PLANET_NUMBER = "planet_number";
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_album_list, container, false);
         GridView gridView = (GridView) rootView.findViewById(R.id.image);
         gridView.setAdapter(new ImageAdapter(getActivity()));

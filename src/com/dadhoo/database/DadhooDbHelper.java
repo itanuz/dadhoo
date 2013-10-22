@@ -8,6 +8,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 
+import com.dadhoo.provider.DadhooDB;
+
 /**
  * @author gaecarme
  *
@@ -19,31 +21,35 @@ public class DadhooDbHelper extends SQLiteOpenHelper {
 
 	
     private static final String DATABASE_NAME = SIMPLE_VIDEO + ".db";
-    private static int DATABASE_VERSION = 10;
+    private static int DATABASE_VERSION = 1;
 
-    DadhooDbHelper(Context context) {
+    public DadhooDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        createTable(sqLiteDatabase);
+        createDbScheme(sqLiteDatabase);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldv, int newv)
     {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + ALBUM_TABLE_NAME + ";");
-        createTable(sqLiteDatabase);
+        createDbScheme(sqLiteDatabase);
     }
 
-    private void createTable(SQLiteDatabase sqLiteDatabase) {
+    private void createDbScheme(SQLiteDatabase sqLiteDatabase) {
         String qs = "CREATE TABLE " + ALBUM_TABLE_NAME + " (" +
-                BaseColumns._ID +
-                " INTEGER PRIMARY KEY AUTOINCREMENT, " + "";
-//                FinchVideo.SimpleVideos.TITLE_NAME + " TEXT, " +
-//                FinchVideo.SimpleVideos.DESCRIPTION_NAME + " TEXT, " +
-//                FinchVideo.SimpleVideos.URI_NAME + " TEXT);";
+		                BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + "" +
+		                DadhooDB.Albums.TITLE + " TEXT, " +
+		                DadhooDB.Albums.BABYNAME + " TEXT, " +
+		                DadhooDB.Albums.BIRTHDATE + " TEXT, " +
+		                DadhooDB.Albums.BIRTHLOCATION + " TEXT, " +
+		                DadhooDB.Albums.FATHERNAME + " TEXT, " +
+		                DadhooDB.Albums.MOTHERNAME + " TEXT, " +
+		                DadhooDB.Albums.PICTURE_ID + " TEXT, " +
+		                DadhooDB.Albums._DATA + " TEXT " + ")";
         sqLiteDatabase.execSQL(qs);
     }
 }
