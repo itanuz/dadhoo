@@ -22,7 +22,7 @@ public class DadhooDbHelper extends SQLiteOpenHelper {
 
 	
     private static final String DATABASE_NAME = DADHOO + ".db";
-    private static int DATABASE_VERSION = 3;
+    private static int DATABASE_VERSION = 4;
 
     public DadhooDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
