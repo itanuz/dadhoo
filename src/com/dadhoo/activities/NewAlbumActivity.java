@@ -27,7 +27,7 @@ public class NewAlbumActivity extends Activity {
 
 	private static final int MEDIA_TYPE_IMAGE = 1;
 	
-	private Uri pictureUri;
+	private Uri pictureFileUri;
 	
 	private EditText mAlbumTitleText;
 	private EditText mAlbumBabyName;
@@ -71,7 +71,9 @@ public class NewAlbumActivity extends Activity {
 				NavUtils.navigateUpFromSameTask(this);
 				return true;
 			case R.id.action_done:
-				Uri uriInserted = insertAlbum();
+				Uri pictureContentUri = insertPicture();
+				
+				Uri uriInserted = insertAlbum(pictureContentUri);
 				if(uriInserted != null) {
 					Intent intent = new Intent(this, MainActivity.class);
 					Toast.makeText(this, "Album created", Toast.LENGTH_LONG).show();
@@ -80,23 +82,35 @@ public class NewAlbumActivity extends Activity {
 				return true;
 			case R.id.action_camera:
 				Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-				pictureUri = getOutputMediaFileUri(MEDIA_TYPE_IMAGE);
-				intent.putExtra(MediaStore.EXTRA_OUTPUT, pictureUri);
+				pictureFileUri = getOutputMediaFileUri(MEDIA_TYPE_IMAGE);
+				intent.putExtra(MediaStore.EXTRA_OUTPUT, pictureFileUri);
 				startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
 			}
 		return super.onOptionsItemSelected(item);
 	}
 
-	private Uri insertAlbum() {
-		ContentValues contentValues = new ContentValues();
-		contentValues.put(DadhooDB.Albums.TITLE, mAlbumTitleText.getText().toString());
-		contentValues.put(DadhooDB.Albums.BABYNAME, mAlbumBabyName.getText().toString());
-		contentValues.put(DadhooDB.Albums.BIRTHLOCATION, mAlbumBirthLocation.getText().toString());
-		contentValues.put(DadhooDB.Albums.FATHERNAME, mAlbumFatherName.getText().toString());
-		contentValues.put(DadhooDB.Albums.MOTHERNAME, mAlbumMotherName.getText().toString());
+	private Uri insertPicture() {
+		ContentValues pictureContentValues = new ContentValues();
+    	pictureContentValues.put(DadhooDB.Pictures._DATA, pictureFileUri.getPath());
+
+    	return getContentResolver().insert(DadhooDB.Pictures.PICTURE_CONTENT_URI, pictureContentValues);
+	}
+
+	private Uri insertAlbum(Uri pictureContentUri) {
+		ContentValues albumContentValues = new ContentValues();
 		
-		return getContentResolver().insert(DadhooDB.Albums.CONTENT_URI, contentValues);
+		albumContentValues.put(DadhooDB.Albums.TITLE, mAlbumTitleText.getText().toString());
+		albumContentValues.put(DadhooDB.Albums.BABYNAME, mAlbumBabyName.getText().toString());
+		albumContentValues.put(DadhooDB.Albums.BIRTHLOCATION, mAlbumBirthLocation.getText().toString());
+		albumContentValues.put(DadhooDB.Albums.FATHERNAME, mAlbumFatherName.getText().toString());
+		albumContentValues.put(DadhooDB.Albums.MOTHERNAME, mAlbumMotherName.getText().toString());
+		Long timestamp = new Date().getTime();
+		albumContentValues.put(DadhooDB.Albums.TIMESTAMP, timestamp);
+		if(pictureFileUri != null) {//insert the picture content uri only if the snapshot exists
+    		albumContentValues.put(DadhooDB.Albums.PICTURE_URI, pictureContentUri.toString());
+    	}
 		
+		return getContentResolver().insert(DadhooDB.Albums.ALBUMS_CONTENT_URI, albumContentValues);
 	}
 	
 	/* Create a File for saving an image or video 
@@ -140,7 +154,7 @@ public class NewAlbumActivity extends Activity {
 		if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
 	        if (resultCode == RESULT_OK) {
 	            // Image captured and saved to fileUri specified in the Intent
-	            Toast.makeText(this, "Image saved to:\n" + pictureUri.getPath(), Toast.LENGTH_LONG).show();
+	            Toast.makeText(this, "Image saved to:\n" + pictureFileUri.getPath(), Toast.LENGTH_LONG).show();
 	        } else if (resultCode == RESULT_CANCELED) {
 	            // User cancelled the image capture
 	        } else {

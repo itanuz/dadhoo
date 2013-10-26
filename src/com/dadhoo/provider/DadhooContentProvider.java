@@ -14,6 +14,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.provider.BaseColumns;
+import android.text.TextUtils;
 
 import com.dadhoo.database.DadhooDbHelper;
 
@@ -25,24 +26,18 @@ public class DadhooContentProvider extends ContentProvider {
 
     private static final int ALBUMS = 1;//all albums
     private static final int ALBUM_ID = 2;//only one album
+    private static final int PICTURES = 3;//only one picture
+    private static final int PICTURE_ID = 4;//only one picture
     
     private static UriMatcher sUriMatcher;
     static {
         sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         sUriMatcher.addURI(DadhooDB.AUTHORITY, DadhooDB.Albums.ALBUM_NAME, ALBUMS);
         sUriMatcher.addURI(DadhooDB.AUTHORITY, DadhooDB.Albums.ALBUM_NAME + "/#", ALBUM_ID);
+        sUriMatcher.addURI(DadhooDB.AUTHORITY, DadhooDB.Pictures.PICTURE_NAME, PICTURES);
+        sUriMatcher.addURI(DadhooDB.AUTHORITY, DadhooDB.Pictures.PICTURE_NAME + "/#", PICTURE_ID);
     }
 
-    private static HashMap<String, String> sVideosProjectionMap;
-    static {
-        // example projection map, not actually used in this application
-        sVideosProjectionMap = new HashMap<String, String>();
-        sVideosProjectionMap.put(BaseColumns._ID, BaseColumns._ID);
-//        sVideosProjectionMap.put(FinchVideo.Videos.TITLE, FinchVideo.Videos.TITLE);
-//        sVideosProjectionMap.put(FinchVideo.Videos.VIDEO, FinchVideo.Videos.VIDEO);
-//        sVideosProjectionMap.put(FinchVideo.Videos.DESCRIPTION, FinchVideo.Videos.DESCRIPTION);
-    }
-	
     private DadhooDbHelper mOpenDbHelper;
 
 	
@@ -54,8 +49,45 @@ public class DadhooContentProvider extends ContentProvider {
 
 	@Override
 	public Cursor query(Uri uri, String[] projection, String selection,	String[] selectionArgs, String sortOrder) {
-		// TODO Auto-generated method stub
-		return null;
+		// If no sort order is specified use the default
+        String orderBy;
+        if (TextUtils.isEmpty(sortOrder)) {
+            orderBy = DadhooDB.Albums.DEFAULT_SORT_ORDER;
+        } else {
+            orderBy = sortOrder;
+        }
+
+        Cursor cursor;
+        switch (sUriMatcher.match(uri)) {
+            case ALBUMS:
+                cursor = getDb().query(DadhooDbHelper.ALBUM_TABLE_NAME, 
+                						projection,
+                						selection, 
+                						selectionArgs,
+                						null, 
+                						null, 
+                						orderBy);
+
+                cursor.setNotificationUri(getContext().getContentResolver(), DadhooDB.Albums.ALBUMS_CONTENT_URI);
+                break;
+            case PICTURE_ID:
+                // query the database for a specific video
+                long pictureID = ContentUris.parseId(uri);
+                cursor = getDb().query(DadhooDbHelper.PICTURE_TABLE_NAME, 
+		                				  projection,
+		                				  BaseColumns._ID + " = " + pictureID +
+		                				  (!TextUtils.isEmpty(selection) ? " AND (" + selection + ')' : ""),
+		                                selectionArgs, 
+		                                null, 
+		                                null, 
+		                                null);
+                cursor.setNotificationUri(getContext().getContentResolver(), DadhooDB.Pictures.PICTURE_CONTENT_URI);
+                break;
+            default:
+                throw new IllegalArgumentException("unsupported uri: " + uri);
+        }
+
+        return cursor;
 	}
 
 	@Override
@@ -92,19 +124,29 @@ public class DadhooContentProvider extends ContentProvider {
 			values = new ContentValues();
 		}
            
+        SQLiteDatabase db = getDb();
+
         switch (sUriMatcher.match(uri)) {
 			case ALBUMS:
 				// verifyValues(values);
-				SQLiteDatabase db = mOpenDbHelper.getWritableDatabase();
 				long rowId = db.insert(DadhooDbHelper.ALBUM_TABLE_NAME, DadhooDB.Albums.ALBUM_NAME, values);
 				if (rowId > 0) {
-					Uri albumURi = ContentUris.withAppendedId(DadhooDB.Albums.CONTENT_URI, rowId);
+					Uri albumURi = ContentUris.withAppendedId(DadhooDB.Albums.ALBUMS_CONTENT_URI, rowId);
 					getContext().getContentResolver().notifyChange(albumURi, null);
 					return albumURi;
 				}
-				
 				throw new SQLException("Failed to insert row into " + uri);
-	//		case EVENTS:
+			case PICTURES:
+				long pictureId = db.insert(DadhooDbHelper.PICTURE_TABLE_NAME, DadhooDB.Pictures.PICTURE_NAME, values);
+				if (pictureId > 0) {
+					Uri pictureUri = ContentUris.withAppendedId(DadhooDB.Pictures.PICTURE_CONTENT_URI, pictureId);
+					getContext().getContentResolver().notifyChange(pictureUri, null);
+					return pictureUri;
+				}
+				throw new SQLException("Failed to insert row into " + uri);
+				
+				
+				//		case EVENTS:
 	//			break;
 			default:
 				throw new IllegalArgumentException("Unknown video type: " + uri);
@@ -113,4 +155,5 @@ public class DadhooContentProvider extends ContentProvider {
 
 	}
 	
+	private SQLiteDatabase getDb() { return mOpenDbHelper.getWritableDatabase(); }
 }

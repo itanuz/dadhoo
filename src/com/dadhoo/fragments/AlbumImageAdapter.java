@@ -3,38 +3,50 @@
  */
 package com.dadhoo.fragments;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.dadhoo.provider.DadhooDB;
+
 import android.content.Context;
+import android.content.CursorLoader;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
-
-import com.dadhoo.R;
+import android.widget.SimpleCursorAdapter;
 
 /**
  * @author gaecarme
  *
  */
-public class AlbumImageAdapter extends BaseAdapter {
-    private Context mContext;
+public class AlbumImageAdapter extends SimpleCursorAdapter {
 
-    public AlbumImageAdapter(Context c) {
-        mContext = c;
-    }
+	private Context mContext;
+	private Cursor mCursor;
 
-    public int getCount() {
-        return mThumbIds.length;
-    }
+	public AlbumImageAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags) {
+		super(context, layout, c, from, to, flags);
+		mContext = context;
+		mCursor = c;
+	}
 
-    public Object getItem(int position) {
-        return null;
-    }
-
-    public long getItemId(int position) {
-        return 0;
-    }
-
+//    public int getCount() {
+//        return mThumbUris.size();
+//    }
+//
+//    public Object getItem(int position) {
+//        return null;
+//    }
+//
+//    public long getItemId(int position) {
+//        return 0;
+//    }
+//
     // create a new ImageView for each item referenced by the Adapter
     public View getView(int position, View convertView, ViewGroup parent) {
         ImageView imageView;
@@ -46,15 +58,33 @@ public class AlbumImageAdapter extends BaseAdapter {
         } else {
             imageView = (ImageView) convertView;
         }
-
-        imageView.setImageResource(mThumbIds[position]);
+        mCursor.moveToPosition(position);
+    	Uri pictureContentUri = Uri.parse(mCursor.getString(8));
+    	CursorLoader pictureCursorLoader = new CursorLoader(mContext,
+															pictureContentUri,
+															null,
+															null,
+															null,
+															null);
+    	Cursor pictureCursor = pictureCursorLoader.loadInBackground();
+    	
+    	Bitmap myBitmap = null;
+        if(pictureCursor.moveToFirst()){
+        	int thCulumnIndex = pictureCursor.getColumnIndex(DadhooDB.Pictures._DATA);
+        	String thumbPath = pictureCursor.getString(thCulumnIndex);
+        	myBitmap = BitmapFactory.decodeFile(thumbPath);
+        	imageView.setImageBitmap(myBitmap);
+        }
+    	
+//        imageView.setImageURI(mThumbUris.get(position));
         return imageView;
     }
 
     // references to our images
-    private Integer[] mThumbIds = {
-            R.drawable.sample_1, R.drawable.sample_2,
-            R.drawable.sample_3, R.drawable.sample_4,
-    };
+    private final List<Uri> mThumbUris = new ArrayList<Uri>();
+    
+    public void addPictureFileUri(Uri pictureFileUri) {
+    	this.mThumbUris.add(pictureFileUri);
+    }	
 }
 

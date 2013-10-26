@@ -29,88 +29,60 @@ public final class DadhooDB {
 		private Albums() {
 		}
 
-		// uri references all albums
-		public static final Uri ALBUMS_URI = Uri.parse("content://"	+ AUTHORITY + "/" + Albums.ALBUM_NAME);
-
-		/**
-		 * The content:// style URI for this table
-		 */
-		public static final Uri CONTENT_URI = ALBUMS_URI;
-
-		/**
-		 * The MIME type of {@link #CONTENT_URI} providing a list of album.
-		 */
-		public static final String ALBUM_DIR_CONTENT_TYPE = "vnd.android.cursor.dir/vnd.com.dadhoo.provider.album";
-
-		/**
-		 * The MIME type of a {@link #CONTENT_URI} sub-directory of a single
-		 * video.
-		 */
-		public static final String ALBUM_ITEM_CONTENT_TYPE = "vnd.android.cursor.item/vnd.com.dadhoo.provider.album";
-
 		/**
 		 * The album itself
-		 * <P>
-		 * Type: TEXT
-		 * </P>
 		 */
 		public static final String ALBUM_NAME = "album";
 
 		/**
+		 *  URI that references all albums
+		 */
+		public static final Uri ALBUMS_CONTENT_URI = Uri.parse("content://"	+ AUTHORITY + "/" + Albums.ALBUM_NAME);
+
+		/**
+		 * The MIME type of {@link #ALBUMS_CONTENT_URI} providing a list of album.
+		 */
+		public static final String ALBUM_DIR_CONTENT_TYPE = "vnd.android.cursor.dir/vnd.com.dadhoo.provider.album";
+
+		/**
+		 * The MIME type of a {@link #ALBUMS_CONTENT_URI} sub-directory of a single album.
+		 */
+		public static final String ALBUM_ITEM_CONTENT_TYPE = "vnd.android.cursor.item/vnd.com.dadhoo.provider.album";
+
+		/**
 		 * The title of the video
-		 * <P>
-		 * Type: TEXT
-		 * </P>
 		 */
 		public static final String TITLE = "title";
 
 		/**
 		 * The babyname itself
-		 * <P>
-		 * Type: TEXT
-		 * </P>
 		 */
 		public static final String BABYNAME = "babyname";
 
 		/**
 		 * The birthdate itself
-		 * <P>
-		 * Type: TEXT
-		 * </P>
 		 */
 		public static final String BIRTHDATE = "birthdate";
 		
 		/**
 		 * The fathername itself
-		 * <P>
-		 * Type: TEXT
-		 * </P>
 		 */
 		public static final String FATHERNAME = "fathername";
 		
 		/**
 		 * The video itself
-		 * <P>
-		 * Type: TEXT
-		 * </P>
 		 */
 		public static final String MOTHERNAME = "mothername";
 		
 		/**
 		 * The birthlocation itself
-		 * <P>
-		 * Type: TEXT
-		 * </P>
 		 */
 		public static final String BIRTHLOCATION = "birthlocation";
 		
 		/**
-		 * The picture_id itself
-		 * <P>
-		 * Type: TEXT
-		 * </P>
+		 * The picture_uri itself
 		 */
-		public static final String PICTURE_ID = "picture_id";
+		public static final String PICTURE_URI = "picture_uri";
 		
 		public static final String USER_ID = "user_id";
 		
@@ -120,10 +92,38 @@ public final class DadhooDB {
 		 * element was inserted into the DadhooContentProvider database.
 		 */
 		public static final String TIMESTAMP = "timestamp";
+	}
+	
+	/**
+	 * Albums columns
+	 */
+	public static final class Pictures implements BaseColumns {
 
 		/**
-		 * Name of the thumb data column.
+		 * The album itself <P>Type: TEXT</P>
+		 */
+		public static final String PICTURE_NAME = "picture";
+		/**
+		 *  URI that references all albums
+		 */
+		public static final Uri PICTURE_CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + PICTURE_NAME);
+
+		/**
+		 * The MIME type of {@link #ALBUMS_CONTENT_URI} providing a list of album.
+		 */
+		public static final String ALBUM_DIR_CONTENT_TYPE = "vnd.android.cursor.dir/vnd.com.dadhoo.provider.album";
+
+		/**
+		 * The MIME type of a {@link #ALBUMS_CONTENT_URI} sub-directory of a single album.
+		 */
+		public static final String ALBUM_ITEM_CONTENT_TYPE = "vnd.android.cursor.item/vnd.com.dadhoo.provider.album";
+
+		/**
+		 * The field containing the physical path of the picture on the file system 
 		 */
 		public static final String _DATA = "_data";
+		
+	
 	}
+		
 }
