@@ -6,6 +6,7 @@ package com.dadhoo.fragments;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.dadhoo.R;
 import com.dadhoo.provider.DadhooDB;
 
 import android.content.Context;
@@ -58,25 +59,31 @@ public class AlbumImageAdapter extends SimpleCursorAdapter {
         } else {
             imageView = (ImageView) convertView;
         }
+        Bitmap myBitmap = null;
         mCursor.moveToPosition(position);
-    	Uri pictureContentUri = Uri.parse(mCursor.getString(8));
-    	CursorLoader pictureCursorLoader = new CursorLoader(mContext,
-															pictureContentUri,
-															null,
-															null,
-															null,
-															null);
-    	Cursor pictureCursor = pictureCursorLoader.loadInBackground();
-    	
-    	Bitmap myBitmap = null;
-        if(pictureCursor.moveToFirst()){
-        	int thCulumnIndex = pictureCursor.getColumnIndex(DadhooDB.Pictures._DATA);
-        	String thumbPath = pictureCursor.getString(thCulumnIndex);
-        	myBitmap = BitmapFactory.decodeFile(thumbPath);
-        	imageView.setImageBitmap(myBitmap);
+        
+        String pictureContentUriString = mCursor.getString(8);
+        if (pictureContentUriString != null) {
+        	Uri pictureContentUri = Uri.parse(pictureContentUriString);
+        	CursorLoader pictureCursorLoader = new CursorLoader(mContext,
+        			pictureContentUri,
+        			null,
+        			null,
+        			null,
+        			null);
+        	Cursor pictureCursor = pictureCursorLoader.loadInBackground();
+        	
+        	if(pictureCursor.moveToFirst()){
+        		int thCulumnIndex = pictureCursor.getColumnIndex(DadhooDB.Pictures._DATA);
+        		String thumbPath = pictureCursor.getString(thCulumnIndex);
+        		myBitmap = BitmapFactory.decodeFile(thumbPath);
+        		imageView.setImageBitmap(myBitmap);
+        	}
+        } else {
+        	//put here a fake image to show that there is no image for the album  
+	        imageView.setImageResource(R.drawable.sample_1);
         }
     	
-//        imageView.setImageURI(mThumbUris.get(position));
         return imageView;
     }
 

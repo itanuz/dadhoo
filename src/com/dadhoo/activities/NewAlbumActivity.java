@@ -34,6 +34,9 @@ public class NewAlbumActivity extends Activity {
 	private EditText mAlbumBirthLocation;
 	private EditText mAlbumMotherName;
 	private EditText mAlbumFatherName;
+	
+	private long album_id = -1;
+	private boolean isUpdate = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +48,16 @@ public class NewAlbumActivity extends Activity {
 		mAlbumBirthLocation = (EditText) findViewById(R.id.album_birth_location);
 		mAlbumMotherName = (EditText) findViewById(R.id.album_mother_name);
 		mAlbumFatherName = (EditText) findViewById(R.id.album_father_name);
+		
+		if (getIntent().getExtras() != null) {
+			album_id = getIntent().getExtras().getLong("album_id");
+			isUpdate = true;
+		}
+		
+		if (isUpdate) {//TODO initialize here the fields.
+			mAlbumTitleText.setText(getTitle());
+		}
+	        
 		
 		setupActionBar();
 	}
@@ -71,11 +84,14 @@ public class NewAlbumActivity extends Activity {
 				NavUtils.navigateUpFromSameTask(this);
 				return true;
 			case R.id.action_done:
-				Uri pictureContentUri = insertPicture();
-				
+				Uri pictureContentUri = null;
+				if (pictureFileUri != null) {
+					pictureContentUri = insertPicture();
+				}
 				Uri uriInserted = insertAlbum(pictureContentUri);
 				if(uriInserted != null) {
 					Intent intent = new Intent(this, MainActivity.class);
+					intent.putExtra("albums_list", true);
 					Toast.makeText(this, "Album created", Toast.LENGTH_LONG).show();
 					startActivity(intent);
 				}
@@ -106,7 +122,7 @@ public class NewAlbumActivity extends Activity {
 		albumContentValues.put(DadhooDB.Albums.MOTHERNAME, mAlbumMotherName.getText().toString());
 		Long timestamp = new Date().getTime();
 		albumContentValues.put(DadhooDB.Albums.TIMESTAMP, timestamp);
-		if(pictureFileUri != null) {//insert the picture content uri only if the snapshot exists
+		if(pictureContentUri != null) {//insert the picture content uri only if the snapshot exists
     		albumContentValues.put(DadhooDB.Albums.PICTURE_URI, pictureContentUri.toString());
     	}
 		

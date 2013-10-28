@@ -22,11 +22,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.CursorAdapter;
 import android.widget.GridView;
 
 import com.dadhoo.R;
 import com.dadhoo.activities.EventsListActivity;
+import com.dadhoo.activities.NewAlbumActivity;
 import com.dadhoo.provider.DadhooDB;
 
 /**
@@ -65,7 +67,6 @@ public class AlbumFragment extends Fragment {
 		
         gridView.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-                //TODO: check here if there is space or not checking the framework contain 
             	boolean useFragment = false;
             	if (useFragment) { //multi-pane
             		//update the fragment contained in the getActivity()
@@ -76,6 +77,31 @@ public class AlbumFragment extends Fragment {
             	}
             }
         });
+        
+        gridView.setOnItemLongClickListener(new OnItemLongClickListener() {
+
+			@Override
+			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+            	boolean useFragment = false;
+            	if (useFragment) { //multi-pane
+            		//update the fragment contained in the getActivity()
+            	} else {//one-pane call the activity
+	            	Intent intent = new Intent(getActivity(), NewAlbumActivity.class);
+	            	//Bundle bundle = new Bundle();
+	            	//intent.putExtras(bundle);	            	
+	            	
+	            	intent.putExtra("album_id", id);
+	            	
+	            	startActivity(intent);
+            	}
+				return false;
+			}
+
+        
+        
+        });
+        
+        
         return gridView;
     }
 }

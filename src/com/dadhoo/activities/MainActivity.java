@@ -32,12 +32,17 @@ public class MainActivity extends Activity {
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
     private String[] mLinkTitle;
+    
+    private boolean isAlbumCreated = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        
+        if (getIntent().getExtras() != null) {
+        	isAlbumCreated = getIntent().getExtras().getBoolean("albums_list");
+        }	
         mTitle = mDrawerTitle = getTitle();
         mLinkTitle = getResources().getStringArray(R.array.drawer_link_array);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -78,9 +83,17 @@ public class MainActivity extends Activity {
         
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        if (null == fragmentManager.findFragmentByTag("FRAG_EVENTS")) {
-        	fragmentTransaction.add(R.id.content_frame, new EventListFragment(), "FRAG_EVENTS");
-        }	
+        
+        if (isAlbumCreated) {//add album fragment
+        	if (null == fragmentManager.findFragmentByTag("FRAG_ALBUMS")) {
+	        	fragmentTransaction.add(R.id.content_frame, new AlbumFragment(), "FRAG_ALBUMS");
+	        }
+        
+        } else {//add all events list
+	        if (null == fragmentManager.findFragmentByTag("FRAG_EVENTS")) {
+	        	fragmentTransaction.add(R.id.content_frame, new EventListFragment(), "FRAG_EVENTS");
+	        }
+        }
 //   		fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
