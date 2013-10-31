@@ -3,8 +3,6 @@
  */
 package com.dadhoo.provider;
 
-import java.util.HashMap;
-
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -26,6 +24,7 @@ public class DadhooContentProvider extends ContentProvider {
 
     private static final int ALBUMS = 1;//all albums
     private static final int ALBUM_ID = 2;//only one album
+    
     private static final int PICTURES = 3;//only one picture
     private static final int PICTURE_ID = 4;//only one picture
     
@@ -67,11 +66,22 @@ public class DadhooContentProvider extends ContentProvider {
                 						null, 
                 						null, 
                 						orderBy);
-
+                cursor.setNotificationUri(getContext().getContentResolver(), DadhooDB.Albums.ALBUMS_CONTENT_URI);
+                break;
+            case ALBUM_ID:
+            	// query the database for a specific album
+                long albumID = ContentUris.parseId(uri);
+                cursor = getDb().query(DadhooDbHelper.ALBUM_TABLE_NAME,
+				                		projection,
+				                        BaseColumns._ID + " = " + albumID,
+				                        selectionArgs, 
+				                        null, 
+				                        null, 
+				                        orderBy);
                 cursor.setNotificationUri(getContext().getContentResolver(), DadhooDB.Albums.ALBUMS_CONTENT_URI);
                 break;
             case PICTURE_ID:
-                // query the database for a specific video
+                // query the database for a specific picture
                 long pictureID = ContentUris.parseId(uri);
                 cursor = getDb().query(DadhooDbHelper.PICTURE_TABLE_NAME, 
 		                				  projection,

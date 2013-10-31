@@ -6,7 +6,10 @@ import java.util.Date;
 
 import android.app.Activity;
 import android.content.ContentValues;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -56,6 +59,20 @@ public class NewAlbumActivity extends Activity {
 		
 		if (isUpdate) {//TODO initialize here the fields.
 			mAlbumTitleText.setText(getTitle());
+			CursorLoader cursorLoader = new CursorLoader(this, 
+					 DadhooDB.Albums.ALBUMS_CONTENT_URI, 
+					 new String[]{
+						DadhooDB.Albums.TITLE, 
+						}, 
+					 null, 
+					 null, 
+					 null);
+			Cursor cursor = cursorLoader.loadInBackground();
+			
+			if(cursor.moveToFirst()){
+				 mAlbumTitleText.setText(cursor.getString(0));
+        	}
+			
 		}
 	        
 		
@@ -130,14 +147,13 @@ public class NewAlbumActivity extends Activity {
 	}
 	
 	/* Create a File for saving an image or video 
-	 *  Create a file Uri for saving an image or video
-	 * 
 	 */
 	private Uri getOutputMediaFileUri(int type) {
 		// To be safe, you should check that the SDCard is mounted
 	    // using Environment.getExternalStorageState() before doing this.
 
 	    File mediaStorageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);//nvironment.DIRECTORY_PICTURES), "com.dadhoo.app");
+	    //File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "DADHOO");
 	    // This location works best if you want the created images to be shared
 	    // between applications and persist after your app has been uninstalled.
 

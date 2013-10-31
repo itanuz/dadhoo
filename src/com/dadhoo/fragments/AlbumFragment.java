@@ -7,15 +7,10 @@
  */
 package com.dadhoo.fragments;
 
-import java.net.URI;
-
 import android.app.Fragment;
-import android.content.ContentUris;
 import android.content.CursorLoader;
 import android.content.Intent;
-import android.content.UriMatcher;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,7 +18,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
-import android.widget.CursorAdapter;
 import android.widget.GridView;
 
 import com.dadhoo.R;
@@ -73,6 +67,7 @@ public class AlbumFragment extends Fragment {
             	} else {//one-pane call the activity
 	            	Intent intent = new Intent(getActivity(), EventsListActivity.class);
 	            	intent.putExtra("position", position);
+	            	intent.putExtra("album_id", id);
 	            	startActivity(intent);
             	}
             }
