@@ -57,8 +57,7 @@ public class NewAlbumActivity extends Activity {
 			isUpdate = true;
 		}
 		
-		if (isUpdate) {//TODO initialize here the fields.
-			mAlbumTitleText.setText(getTitle());
+		if (isUpdate) {//initialize fields.
 			CursorLoader cursorLoader = new CursorLoader(this, 
 					 DadhooDB.Albums.ALBUMS_CONTENT_URI, 
 					 new String[]{
@@ -71,11 +70,11 @@ public class NewAlbumActivity extends Activity {
 			
 			if(cursor.moveToFirst()){
 				 mAlbumTitleText.setText(cursor.getString(0));
-        	}
+				 
+			
+			}
 			
 		}
-	        
-		
 		setupActionBar();
 	}
 
