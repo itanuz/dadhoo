@@ -3,9 +3,14 @@
  */
 package com.dadhoo.provider;
 
+import java.util.ArrayList;
+
 import android.content.ContentProvider;
+import android.content.ContentProviderOperation;
+import android.content.ContentProviderResult;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.OperationApplicationException;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.SQLException;
@@ -14,6 +19,7 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 import android.text.TextUtils;
 
+import com.dadhoo.database.DadhooDB;
 import com.dadhoo.database.DadhooDbHelper;
 
 /**
@@ -101,10 +107,25 @@ public class DadhooContentProvider extends ContentProvider {
 	}
 
 	@Override
-	public int update(Uri uri, ContentValues values, String selection,
-			String[] selectionArgs) {
-		// TODO Auto-generated method stub
-		return 0;
+	public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+		// verifyValues(values);
+
+		getContext().getContentResolver().notifyChange(uri, null);
+		
+		SQLiteDatabase db = getDb();
+		
+		int affected;
+		switch (sUriMatcher.match(uri)) {
+		case ALBUMS:
+			affected = db.update(DadhooDbHelper.ALBUM_TABLE_NAME, values, selection, selectionArgs);
+			break;
+		case PICTURES:
+			affected = db.update(DadhooDbHelper.PICTURE_TABLE_NAME, values, selection, selectionArgs);
+			break;
+		default:
+			throw new IllegalArgumentException("Unknown video type: " + uri);
+			}
+		return affected;
 	}
 
 	@Override
@@ -113,6 +134,20 @@ public class DadhooContentProvider extends ContentProvider {
 		return 0;
 	}
 
+	@Override
+	public ContentProviderResult[] applyBatch(ArrayList<ContentProviderOperation> operations)
+	        throws OperationApplicationException {
+	    final SQLiteDatabase db = getDb();
+	    db.beginTransaction();
+	    try {
+	        ContentProviderResult[] results = super.applyBatch(operations);
+	        db.setTransactionSuccessful();
+	        return results;
+	    } finally {
+	        db.endTransaction();
+	    }
+	}
+	
 	@Override
 	public String getType(Uri uri) {
 		switch (sUriMatcher.match(uri)) {
@@ -139,9 +174,9 @@ public class DadhooContentProvider extends ContentProvider {
         switch (sUriMatcher.match(uri)) {
 			case ALBUMS:
 				// verifyValues(values);
-				long rowId = db.insert(DadhooDbHelper.ALBUM_TABLE_NAME, DadhooDB.Albums.ALBUM_NAME, values);
-				if (rowId > 0) {
-					Uri albumURi = ContentUris.withAppendedId(DadhooDB.Albums.ALBUMS_CONTENT_URI, rowId);
+				long albumId = db.insert(DadhooDbHelper.ALBUM_TABLE_NAME, DadhooDB.Albums.ALBUM_NAME, values);
+				if (albumId > 0) {
+					Uri albumURi = ContentUris.withAppendedId(DadhooDB.Albums.ALBUMS_CONTENT_URI, albumId);
 					getContext().getContentResolver().notifyChange(albumURi, null);
 					return albumURi;
 				}
@@ -165,5 +200,7 @@ public class DadhooContentProvider extends ContentProvider {
 
 	}
 	
-	private SQLiteDatabase getDb() { return mOpenDbHelper.getWritableDatabase(); }
+	private SQLiteDatabase getDb() { 
+		return mOpenDbHelper.getWritableDatabase(); 
+	}
 }

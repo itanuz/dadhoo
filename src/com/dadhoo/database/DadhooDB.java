@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.dadhoo.provider;
+package com.dadhoo.database;
 
 import android.net.Uri;
 import android.provider.BaseColumns;
@@ -55,34 +55,9 @@ public final class DadhooDB {
 		public static final String TITLE = "title";
 
 		/**
-		 * The babyname itself
-		 */
-		public static final String BABYNAME = "babyname";
-
-		/**
-		 * The birthdate itself
-		 */
-		public static final String BIRTHDATE = "birthdate";
-		
-		/**
-		 * The fathername itself
-		 */
-		public static final String FATHERNAME = "fathername";
-		
-		/**
-		 * The video itself
-		 */
-		public static final String MOTHERNAME = "mothername";
-		
-		/**
-		 * The birthlocation itself
-		 */
-		public static final String BIRTHLOCATION = "birthlocation";
-		
-		/**
 		 * The picture_uri itself
 		 */
-		public static final String PICTURE_URI = "picture_uri";
+		public static final String PICTURE_ID = "picture_id";
 		
 		public static final String USER_ID = "user_id";
 		

@@ -8,8 +8,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 
-import com.dadhoo.provider.DadhooDB;
-
 /**
  * @author gaecarme
  *
@@ -17,7 +15,8 @@ import com.dadhoo.provider.DadhooDB;
 public class DadhooDbHelper extends SQLiteOpenHelper {
 
 	public static final String DADHOO = "dadhoo";
-    public static final String ALBUM_TABLE_NAME = "albums";
+
+	public static final String ALBUM_TABLE_NAME = "albums";
     public static final String PICTURE_TABLE_NAME = "pictures";
 
 	
@@ -45,13 +44,8 @@ public class DadhooDbHelper extends SQLiteOpenHelper {
         String createAlbumsTable = "CREATE TABLE " + ALBUM_TABLE_NAME + " (" +
 						                BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + "" +
 						                DadhooDB.Albums.TITLE + " TEXT, " +
-						                DadhooDB.Albums.BABYNAME + " TEXT, " +
-						                DadhooDB.Albums.BIRTHDATE + " TEXT, " +
-						                DadhooDB.Albums.BIRTHLOCATION + " TEXT, " +
-						                DadhooDB.Albums.FATHERNAME + " TEXT, " +
-						                DadhooDB.Albums.MOTHERNAME + " TEXT, " +
 						                DadhooDB.Albums.TIMESTAMP + " LONG, " +
-						                DadhooDB.Albums.PICTURE_URI + " TEXT);";
+						                DadhooDB.Albums.PICTURE_ID + " TEXT);";
         
         String createPicturesTable = " CREATE TABLE " + PICTURE_TABLE_NAME + " (" +
                 						BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + "" +
