@@ -142,7 +142,7 @@ public class NewAlbumActivity extends Activity {
 					if(rowAffected != 0) {
 						Intent intent = new Intent(this, MainActivity.class);
 						intent.putExtra("albums_list", true);
-						Toast.makeText(this, "Album updated", Toast.LENGTH_LONG).show();
+						Toast.makeText(this, "updated", Toast.LENGTH_LONG).show();
 						startActivity(intent);
 					} else {
 						//album cannot be created
@@ -152,11 +152,20 @@ public class NewAlbumActivity extends Activity {
 					if(affectedRows > 0) {
 						Intent intent = new Intent(this, MainActivity.class);
 						intent.putExtra("albums_list", true);
-						Toast.makeText(this, "Album created", Toast.LENGTH_LONG).show();
+						Toast.makeText(this, "created", Toast.LENGTH_LONG).show();
 						startActivity(intent);
 					} else {
 						//album cannot be created
 					}
+				}
+				return true;
+			case R.id.action_delete:
+				int rowAffected = deleteAlbum();
+				if(rowAffected != 0) { 
+					Intent intent = new Intent(this, MainActivity.class);
+				intent.putExtra("albums_list", true);
+				Toast.makeText(this, "deleted", Toast.LENGTH_LONG).show();
+				startActivity(intent);
 				}
 				return true;
 			case R.id.action_camera:
@@ -166,6 +175,32 @@ public class NewAlbumActivity extends Activity {
 				startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
 			}
 		return super.onOptionsItemSelected(item);
+	}
+
+	private int deleteAlbum() {
+		int affected = 0;
+		ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
+		if (pictureFileUri != null) {
+			ops.add(ContentProviderOperation.newDelete(DadhooDB.Pictures.PICTURE_CONTENT_URI)
+					.withSelection(BaseColumns._ID + " = ?", new String[] {pictureContentUri.getLastPathSegment()})
+					.build());
+		}
+		ops.add(ContentProviderOperation.newDelete(DadhooDB.Albums.ALBUMS_CONTENT_URI)
+				.withSelection(BaseColumns._ID + " = ?", new String[] {Long.toString(album_id)})
+				.build());
+
+		try {
+			ContentProviderResult[] applyBatch = getContentResolver().applyBatch(DadhooDB.AUTHORITY, ops);
+			for(ContentProviderResult cpr : applyBatch) {
+				affected += cpr.count;
+			}
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (OperationApplicationException e) {
+			e.printStackTrace();
+		}
+	
+		return affected;
 	}
 
 	/**
@@ -202,13 +237,6 @@ public class NewAlbumActivity extends Activity {
 	
 		return affected;
 	}
-
-//	private Uri insertPicture() {
-//		ContentValues pictureContentValues = new ContentValues();
-//    	pictureContentValues.put(DadhooDB.Pictures._DATA, pictureFileUri.getPath());
-//
-//    	return getContentResolver().insert(DadhooDB.Pictures.PICTURE_CONTENT_URI, pictureContentValues);
-//	}
 
 	/**
 	 * Insert a new Album and a Picture if it has been provided

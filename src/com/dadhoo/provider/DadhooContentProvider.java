@@ -130,8 +130,22 @@ public class DadhooContentProvider extends ContentProvider {
 
 	@Override
 	public int delete(Uri uri, String selection, String[] selectionArgs) {
-		// TODO Auto-generated method stub
-		return 0;
+		getContext().getContentResolver().notifyChange(uri, null);
+		
+		SQLiteDatabase db = getDb();
+		
+		int affected;
+		switch (sUriMatcher.match(uri)) {
+		case ALBUMS:
+			affected = db.delete(DadhooDbHelper.ALBUM_TABLE_NAME, selection, selectionArgs);
+			break;
+		case PICTURES:
+			affected = db.delete(DadhooDbHelper.PICTURE_TABLE_NAME, selection, selectionArgs);
+			break;
+		default:
+			throw new IllegalArgumentException("Unknown video type: " + uri);
+			}
+		return affected;
 	}
 
 	@Override
