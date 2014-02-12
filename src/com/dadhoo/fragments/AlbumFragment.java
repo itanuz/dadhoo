@@ -16,11 +16,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.GridView;
 import android.widget.Toast;
 
 import com.dadhoo.R;
+import com.dadhoo.activities.EventsListActivity;
 import com.dadhoo.activities.NewAlbumActivity;
 import com.dadhoo.database.DadhooDB;
 import com.dadhoo.util.ImageFetcherFromFile;
@@ -72,19 +74,19 @@ public class AlbumFragment extends Fragment {
 
 		gridView.setAdapter(albumImageAdapter);
 		
-//        gridView.setOnItemClickListener(new OnItemClickListener() {
-//            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-//            	boolean useFragment = false;
-//            	if (useFragment) { //multi-pane
-//            		//update the fragment contained in the getActivity()
-//            	} else {//one-pane call the activity
-//	            	Intent intent = new Intent(getActivity(), EventsListActivity.class);
-//	            	intent.putExtra("position", position);
-//	            	intent.putExtra("album_id", id);
-//	            	startActivity(intent);
-//            	}
-//            }
-//        });
+        gridView.setOnItemClickListener(new OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+            	boolean useFragment = false;
+            	if (useFragment) { //multi-pane
+            		//update the fragment contained in the getActivity()
+            	} else {//one-pane call the activity
+	            	Intent intent = new Intent(getActivity(), EventsListActivity.class);
+	            	intent.putExtra("position", position);
+	            	intent.putExtra("album_id", id);
+	            	startActivity(intent);
+            	}
+            }
+        });
         
         gridView.setOnItemLongClickListener(new OnItemLongClickListener() {
 
@@ -103,7 +105,7 @@ public class AlbumFragment extends Fragment {
 	            	intent.putExtra("album_id", id);
 	            	startActivity(intent);
             	}
-				return false;
+				return true;
 			}
         });
 
