@@ -65,7 +65,7 @@ public class AlbumFragment extends Fragment {
     	Cursor cursor = cursorLoader.loadInBackground();
 		
 		AlbumImageAdapter albumImageAdapter = new AlbumImageAdapter(this.getActivity(), 
-																	R.layout.fragment_album_list, 
+																	R.layout.gridview_item, 
 																	cursor, 
 																	mImageFetcher,
 																	new String[]{DadhooDB.Albums.PICTURE_ID}, 
@@ -75,7 +75,8 @@ public class AlbumFragment extends Fragment {
 		gridView.setAdapter(albumImageAdapter);
 		
         gridView.setOnItemClickListener(new OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+            
+        	public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
             	boolean useFragment = false;
             	if (useFragment) { //multi-pane
             		//update the fragment contained in the getActivity()
