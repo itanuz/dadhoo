@@ -70,6 +70,69 @@ public final class DadhooDB {
 	}
 	
 	/**
+	 * Events columns
+	 */
+	public static final class Events implements BaseColumns {
+		public static final String DEFAULT_SORT_ORDER = "timestamp DESC";
+
+		// This class cannot be instantiated
+		private Events() {
+		}
+
+		/**
+		 * The events itself
+		 */
+		public static final String EVENT_NAME = "event";
+
+		/**
+		 *  URI that references all events
+		 */
+		public static final Uri EVENTS_CONTENT_URI = Uri.parse("content://"	+ AUTHORITY + "/" + Events.EVENT_NAME);
+
+		/**
+		 * The MIME type of {@link #EVENTS_CONTENT_URI} providing a list of event.
+		 */
+		public static final String EVENT_DIR_CONTENT_TYPE = "vnd.android.cursor.dir/vnd.com.dadhoo.provider.event";
+
+		/**
+		 * The MIME type of a {@link #EVENTS_CONTENT_URI} sub-directory of a single album.
+		 */
+		public static final String EVENT_ITEM_CONTENT_TYPE = "vnd.android.cursor.item/vnd.com.dadhoo.provider.event";
+
+		/**
+		 * The title of the event
+		 */
+		public static final String TITLE = "title";
+
+		/**
+		 * The note of the event
+		 */
+		public static final String NOTE = "note";
+		
+		/**
+		 * Name of the column that contains the timestamp when an album
+		 * element was inserted into the DadhooContentProvider database.
+		 */
+		public static final String INSERTED = "inserted";
+
+		/**
+		 * Name of the column that contains the timestamp when an album
+		 * element was modified into the DadhooContentProvider database.
+		 */
+		public static final String MODIFIED = "modified";
+		
+		/**
+		 * The picture_uri itself
+		 */
+		public static final String PICTURE_ID = "picture_id";
+		
+		public static final String USER_ID = "user_id";
+		
+		
+	}
+
+	
+	/**
 	 * Albums columns
 	 */
 	public static final class Pictures implements BaseColumns {
