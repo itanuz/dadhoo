@@ -27,6 +27,7 @@
     <string name="album_father_name">Father Name</string>
 	<string name="album_mother_name">Mother Name</string>
 	<string name="album_location">Birth Location</string>
+	<string name="album_new_album">Group your events into a new album</string>
 
 	
 </resources>
