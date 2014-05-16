@@ -73,7 +73,7 @@ public final class DadhooDB {
 	 * Events columns
 	 */
 	public static final class Events implements BaseColumns {
-		public static final String DEFAULT_SORT_ORDER = "timestamp DESC";
+		public static final String DEFAULT_SORT_ORDER = "modified DESC";
 
 		// This class cannot be instantiated
 		private Events() {

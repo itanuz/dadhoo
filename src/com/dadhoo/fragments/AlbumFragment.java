@@ -1,10 +1,4 @@
 
-/**
- * 
- *
- *
- * 
- */
 package com.dadhoo.fragments;
 
 import android.app.Fragment;
@@ -35,12 +29,11 @@ import com.dadhoo.database.DadhooDB;
 import com.dadhoo.util.ImageFetcherFromFile;
 
 /**
+ * Fragment that appears in the "content_frame", shows an Album
  * @author gaecarme
  *
  */
-/**
- * Fragment that appears in the "content_frame", shows an Album
- */
+
 public class AlbumFragment extends Fragment {
 
     private int mImageThumbSize;
@@ -49,16 +42,11 @@ public class AlbumFragment extends Fragment {
 
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        //query tutte le pictureContentUri di tutti album
-    	//per ogni pictureContentUri query _data e aggiungila all-array 
-    	
-
 		mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
         mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 
         // The ImageFetcher takes care of loading images into our ImageView children asynchronously
         mImageFetcher = new ImageFetcherFromFile(getActivity(), mImageThumbSize);
-        mImageFetcher.setLoadingImage(R.drawable.empty_photo);
     	
     	View rootView = inflater.inflate(R.layout.fragment_album_list, container, false);
     	GridView gridView = (GridView) rootView.findViewById(R.id.image);

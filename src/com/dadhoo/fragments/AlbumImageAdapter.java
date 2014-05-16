@@ -26,6 +26,14 @@ import com.dadhoo.util.Utils;
  * @author gaecarme
  *
  */
+/**
+ * @author gaecarme
+ *
+ */
+/**
+ * @author gaecarme
+ *
+ */
 public class AlbumImageAdapter extends SimpleCursorAdapter {
 
 	private Context mContext;
@@ -41,7 +49,7 @@ public class AlbumImageAdapter extends SimpleCursorAdapter {
 		mWorker = worker;
 	}
 
-    // create a new ImageView for each item referenced by the Adapter
+    
     public View getView(int position, View convertView, ViewGroup parent) {
         View v = convertView;
     	ImageView picture;
@@ -74,13 +82,6 @@ public class AlbumImageAdapter extends SimpleCursorAdapter {
         name.setText(title);
     	
         return v;
-    }
-
-    // references to our images
-    private final List<Uri> mThumbUris = new ArrayList<Uri>();
-    
-    public void addPictureFileUri(Uri pictureFileUri) {
-    	this.mThumbUris.add(pictureFileUri);
     }
 }
 

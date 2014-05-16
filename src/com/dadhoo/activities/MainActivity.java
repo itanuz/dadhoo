@@ -149,6 +149,8 @@ public class MainActivity extends Activity {
              FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
              switch (position) {
 	     		case 0://new event
+	     			Intent intentEvent = new Intent(getBaseContext(), NewEventActivity.class);
+	     			startActivity(intentEvent);
 	     			break;
 	     		case 1://new album
 	     			Intent intent = new Intent(getBaseContext(), NewAlbumActivity.class);

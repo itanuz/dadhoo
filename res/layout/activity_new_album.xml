@@ -8,22 +8,14 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".NewAlbumActivity" >
 
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/album_title"
-        android:textSize="20sp" />
-
     <EditText
         android:id="@+id/album_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textView1"
-        android:layout_below="@+id/textView1"
         android:ems="20"
-        android:inputType="textAutoCorrect" >
-
+        android:hint="@string/title_hint"
+        android:inputType="textAutoCorrect"
+        android:textStyle="bold" >
         <requestFocus />
     </EditText>
 
@@ -34,7 +26,10 @@
         android:layout_alignLeft="@+id/album_title"
         android:layout_alignRight="@+id/album_title"
         android:layout_below="@+id/album_title"
+        android:adjustViewBounds="false"
+        android:cropToPadding="false"
+        android:paddingTop="0dp"
         android:scaleType="fitXY"
-        android:src="@drawable/empty_photo"/>
+        android:src="@drawable/empty_photo" />
 
 </RelativeLayout>
