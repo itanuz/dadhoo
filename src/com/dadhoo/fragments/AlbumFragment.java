@@ -37,13 +37,11 @@ import com.dadhoo.util.ImageFetcherFromFile;
 public class AlbumFragment extends Fragment {
 
     private int mImageThumbSize;
-	private int mImageThumbSpacing;
 	private ImageFetcherFromFile mImageFetcher;
 
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
-        mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 
         // The ImageFetcher takes care of loading images into our ImageView children asynchronously
         mImageFetcher = new ImageFetcherFromFile(getActivity(), mImageThumbSize);

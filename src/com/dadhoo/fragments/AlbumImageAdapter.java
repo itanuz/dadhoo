@@ -3,9 +3,6 @@
  */
 package com.dadhoo.fragments;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
@@ -26,14 +23,6 @@ import com.dadhoo.util.Utils;
  * @author gaecarme
  *
  */
-/**
- * @author gaecarme
- *
- */
-/**
- * @author gaecarme
- *
- */
 public class AlbumImageAdapter extends SimpleCursorAdapter {
 
 	private Context mContext;
@@ -50,6 +39,10 @@ public class AlbumImageAdapter extends SimpleCursorAdapter {
 	}
 
     
+    /* create a new  gridview_item for each item contained in the cursor
+     * 
+     * @see android.widget.CursorAdapter#getView(int, android.view.View, android.view.ViewGroup)
+     */
     public View getView(int position, View convertView, ViewGroup parent) {
         View v = convertView;
     	ImageView picture;

@@ -22,7 +22,6 @@ public class EventListFragment extends ListFragment {
 	private static final String TAG = "EventListFragment";
 	
 	private int mImageThumbSize;
-	private int mImageThumbSpacing;
 	private ImageFetcherFromFile mImageFetcher;
 	
     @Override
@@ -30,7 +29,6 @@ public class EventListFragment extends ListFragment {
     	super.onCreate(savedInstanceState);	
 
     	mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
-    	mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 
     	// The ImageFetcher takes care of loading images into our ImageView children asynchronously
     	mImageFetcher = new ImageFetcherFromFile(getActivity(), mImageThumbSize);
