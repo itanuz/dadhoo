@@ -5,10 +5,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-import android.app.Activity;
 import android.content.ContentProviderOperation;
 import android.content.ContentProviderResult;
 import android.content.ContentUris;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.OperationApplicationException;
@@ -19,22 +19,27 @@ import android.os.Environment;
 import android.os.RemoteException;
 import android.provider.BaseColumns;
 import android.provider.MediaStore;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.dadhoo.R;
 import com.dadhoo.database.DadhooDB;
-import com.dadhoo.database.DadhooDbHelper;
+import com.dadhoo.fragments.AlbumListDialogFragment;
 import com.dadhoo.util.ImageFetcherFromFile;
 import com.dadhoo.util.Utils;
 
-public class NewEventActivity extends Activity {
+public class NewEventActivity extends FragmentActivity {
 	
 	private static final String TAG = "NewEventActivity";
 	
@@ -54,7 +59,10 @@ public class NewEventActivity extends Activity {
 	private int mImageThumbSize;
 	private int mImageThumbSpacing;
 
+	private Context context = this;
 	private ImageFetcherFromFile mImageFetcher;
+
+	private ArrayList<Integer> mSelectedItems;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -86,30 +94,16 @@ public class NewEventActivity extends Activity {
 		mEventNoteText = (EditText) findViewById(R.id.edit_note_event);
 		mEventImage = (ImageView) findViewById(R.id.image_event);
 		
-//		if (getIntent().getExtras() != null) {
-//			event_id = getIntent().getExtras().getLong("album_id");
-//			isUpdate = true;
-//		}
 		
-		if (isUpdate) {//updqte then initialize fields.
-			CursorLoader cursorLoaderAlbum = new CursorLoader(this, 
-															 DadhooDB.Albums.ALBUMS_CONTENT_URI, 
-															 null, 
-															 BaseColumns._ID + " = ?",
-															 new String[] {Long.toString(event_id)}, 
-															 null);
-			Cursor cursorAlbum = cursorLoaderAlbum.loadInBackground();
+		Button addAlbumsButton = (Button) findViewById(R.id.button1);
+		addAlbumsButton.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View arg0) {
+					DialogFragment listOfAlbum = new AlbumListDialogFragment();
+					listOfAlbum.show(getSupportFragmentManager(), "ALBUM_LIST_DIALOG");
+				}
+		});
 			
-			if(cursorAlbum.moveToFirst()){
-				 mEventNoteText.setText(cursorAlbum.getString(1));
-				 String pictureContentUriString = cursorAlbum.getString(3);
-			        if (pictureContentUriString != null) {
-			        	pictureContentUri = ContentUris.withAppendedId(DadhooDB.Pictures.PICTURE_CONTENT_URI, Long.parseLong(pictureContentUriString));
-			        	mImageFetcher.loadImage(Uri.parse(Utils.getPicturePath(pictureContentUri, this)), mEventImage);
-			}
-		}
-			
-		}
 		setupActionBar();
 	}
 
@@ -147,9 +141,9 @@ public class NewEventActivity extends Activity {
 				} else {//Insert
 					int affectedRows = insertEvent();
 					if(affectedRows > 0) {
-						Intent intent = new Intent(this, MainActivity.class);
-						intent.putExtra("albums_list", true);
-						Toast.makeText(this, "created", Toast.LENGTH_LONG).show();
+						Intent intent = new Intent(this, EventsListActivity.class);
+//						intent.putExtra("event_list", true);
+						Toast.makeText(this, "Event created", Toast.LENGTH_LONG).show();
 						startActivity(intent);
 					} else {
 						//album cannot be created
@@ -251,6 +245,7 @@ public class NewEventActivity extends Activity {
 			ops.add(ContentProviderOperation.newInsert(DadhooDB.Events.EVENTS_CONTENT_URI)
 					.withValue(DadhooDB.Events.NOTE, mEventNoteText.getText().toString())
 					.withValue(DadhooDB.Events.INSERTED, new Date().getTime())
+					.withValue(DadhooDB.Events.MODIFIED, new Date().getTime())
 					.withValueBackReference(DadhooDB.Events.PICTURE_ID, 0)
 					.build());
 		}

@@ -20,13 +20,13 @@ import com.dadhoo.R;
  */
 public class DrawerArrayAdapter extends ArrayAdapter<String>{
     private final Activity context;
-    private final String[] presidents;
+    private final String[] sectionTitle;
     private final Integer[] iconIds;
 
     public DrawerArrayAdapter(Activity context, String[] linkText, Integer[] iconIds) {
-        super(context, R.layout.event_row, linkText);
+        super(context, R.layout.event_item, linkText);
         this.context = context;
-        this.presidents = linkText;
+        this.sectionTitle = linkText;
         this.iconIds = iconIds;
     }
 
@@ -43,7 +43,7 @@ public class DrawerArrayAdapter extends ArrayAdapter<String>{
         ImageView imageView = (ImageView) rowView.findViewById(R.id.icon_drawer);
 
         //---customize the content of each row based on position---
-        txtTitle.setText(presidents[position]);
+        txtTitle.setText(sectionTitle[position]);
         imageView.setImageResource(iconIds[position]);
         return rowView;
     }

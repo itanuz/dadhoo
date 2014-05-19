@@ -31,6 +31,8 @@
 	<string name="album_mother_name">Mother Name</string>
 	<string name="album_location">Birth Location</string>
 	<string name="album_new_album">Group your events into a new album</string>
+	<string name="write_some_notes">Write some notes</string>
+	<string name="event_spinner_text">Choose one or more albums</string>
 
 	
 </resources>

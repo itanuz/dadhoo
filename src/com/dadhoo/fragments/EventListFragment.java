@@ -39,17 +39,17 @@ public class EventListFragment extends ListFragment {
   												 null, 
   												 null, 
   												 null);
-  		Cursor cursor = cursorLoader.loadInBackground();
+  		Cursor eventsCursor = cursorLoader.loadInBackground();
 		
 		EventAdapter eventAdapter = new EventAdapter(this.getActivity(), 
-													R.layout.event_row, 
-													cursor, 
+													R.layout.event_item, 
+													eventsCursor, 
 													mImageFetcher,
 													new String[]{DadhooDB.Albums.PICTURE_ID}, 
 													null, 
 													0);
 		
-		if(cursor.moveToFirst()){//there are events  
+		if(eventsCursor.moveToFirst()){//there are events  
 			Log.d(TAG, "Ther are events");
 			setListAdapter(eventAdapter);
 //	        gridView.setOnItemClickListener(new OnItemClickListener() {

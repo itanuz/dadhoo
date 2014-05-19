@@ -32,27 +32,28 @@
             android:layout_below="@+id/image_event"
             android:layout_marginTop="16dp"
             android:ems="10"
-            android:hint="Write some notes"
+            android:hint="@string/write_some_notes"
             android:inputType="textMultiLine"
             android:textStyle="bold" 
             />
 
         <TextView
-            android:id="@+id/textView1"
+            android:id="@+id/add_album_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignLeft="@+id/edit_note_event"
             android:layout_below="@+id/edit_note_event"
             android:layout_marginTop="22dp"
-            android:text="Album" />
+            android:text="@string/event_spinner_text" />
 
-        <Spinner
-            android:id="@+id/spinner1"
-            style="@style/AppTheme"
+        <Button
+            android:id="@+id/button1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignTop="@+id/textView1"
-            android:layout_toRightOf="@+id/textView1" />
+            android:layout_below="@+id/edit_note_event"
+            android:layout_toRightOf="@+id/add_album_text_view"
+            android:text="Albums" />
+
     </RelativeLayout>
 
 </ScrollView>

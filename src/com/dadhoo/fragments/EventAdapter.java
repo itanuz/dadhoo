@@ -53,7 +53,7 @@ public class EventAdapter extends SimpleCursorAdapter {
 
 		if (v == null) {
 			Log.d(TAG, "The view is null");
-			v = mInflater.inflate(R.layout.event_row, parent, false);
+			v = mInflater.inflate(R.layout.event_item, parent, false);
 			v.setTag(R.id.picture, v.findViewById(R.id.event_picture));
 			v.setTag(R.id.text, v.findViewById(R.id.event_note));
 			picture = (ImageView) v.getTag(R.id.picture);
