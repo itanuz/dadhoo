@@ -13,6 +13,7 @@ import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.util.Log;
 
 import com.dadhoo.database.DadhooDB;
 
@@ -29,6 +30,7 @@ public class AlbumListDialogFragment extends DialogFragment {
 	private int[] mAlbumSelected;
 	
 	public static AlbumListDialogFragment newInstance(Cursor eventEventAlbumCursor) {
+		Log.d(TAG, "New Instance");
 		AlbumListDialogFragment fragment = new AlbumListDialogFragment();
 		if(eventEventAlbumCursor != null) {
 			Bundle fragmentArgs = new Bundle();
@@ -42,6 +44,7 @@ public class AlbumListDialogFragment extends DialogFragment {
 		        }
 				fragmentArgs.putIntArray("SELECTED_ALBUMS_ID", albumSelected);
 			}
+			eventEventAlbumCursor.close();
 			fragment.setArguments(fragmentArgs); 
 		}
 		return fragment;
@@ -121,6 +124,7 @@ public class AlbumListDialogFragment extends DialogFragment {
             	for(int j = 0; j < mAlbumSelected.length; j++) {
             		if(mAlbumSelected[j] == cursorAlbum.getInt(0)) {
             			selected[i] = true;
+            			mSelectedAlbumItems.add(albumIds[i]);
             		}
             	}
             }
@@ -143,7 +147,7 @@ public class AlbumListDialogFragment extends DialogFragment {
 	                   if (isChecked) {
 	                       // If the user checked the item, add it to the selected items
 	                       mSelectedAlbumItems.add(albumIds[which]);
-	                   } else if (mSelectedAlbumItems.contains(which)) {
+	                   } else if (mSelectedAlbumItems.contains(albumIds[which])) {
 	                       // Else, if the item is already in the array, remove it 
 	                       mSelectedAlbumItems.remove(Integer.valueOf(albumIds[which]));
 	                   }

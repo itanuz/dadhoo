@@ -111,14 +111,6 @@ public class NewEventActivity extends FragmentActivity  implements NoticeDialogL
 					 null);
 			Cursor cursorEvent = cursorLoaderEvent.loadInBackground();
 			
-			CursorLoader cursorLoaderGroupEvent = new CursorLoader(this, 
-					 DadhooDB.GroupEvents.GROUP_EVENTS_CONTENT_URI, 
-					 null, 
-					 DadhooDB.GroupEvents.EVENT_ID + " = ?",
-					 new String[] {Long.toString(event_id)}, 
-					 null);
-			mCursorGroupEvent = cursorLoaderGroupEvent.loadInBackground();
-			
 			if(cursorEvent.moveToFirst()){
 				mEventNoteText.setText(cursorEvent.getString(2));
 				String pictureContentUriString = cursorEvent.getString(5);
@@ -135,6 +127,15 @@ public class NewEventActivity extends FragmentActivity  implements NoticeDialogL
 		addAlbumsButton.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View arg0) {
+					if(isUpdate) {
+						CursorLoader cursorLoaderGroupEvent = new CursorLoader(NewEventActivity.this,
+																		 DadhooDB.GroupEvents.GROUP_EVENTS_CONTENT_URI, 
+																		 null, 
+																		 DadhooDB.GroupEvents.EVENT_ID + " = ?",
+																		 new String[] {Long.toString(event_id)}, 
+																		 null);
+						mCursorGroupEvent = cursorLoaderGroupEvent.loadInBackground();
+					}
 					DialogFragment listOfAlbum = AlbumListDialogFragment.newInstance(mCursorGroupEvent);
 					listOfAlbum.show(getSupportFragmentManager(), "ALBUM_LIST_DIALOG");
 				}
@@ -182,7 +183,7 @@ public class NewEventActivity extends FragmentActivity  implements NoticeDialogL
 						Toast.makeText(this, "Event created", Toast.LENGTH_LONG).show();
 						startActivity(intent);
 					} else {
-						//album cannot be created
+						Log.d(TAG, "album cannot be created");
 					}
 				}
 				return true;
@@ -284,7 +285,7 @@ public class NewEventActivity extends FragmentActivity  implements NoticeDialogL
 					.withValue(DadhooDB.Events.MODIFIED, new Date().getTime())
 					.withValueBackReference(DadhooDB.Events.PICTURE_ID, 0)
 					.build());
-			if(mSelectedItems != null) {
+			if(mSelectedItems != null && !isUpdate) {
 				for(Integer element : mSelectedItems) {
 					ops.add(ContentProviderOperation.newInsert(DadhooDB.GroupEvents.GROUP_EVENTS_CONTENT_URI)
 							.withValue(DadhooDB.Events.MODIFIED, new Date().getTime())
@@ -366,7 +367,41 @@ public class NewEventActivity extends FragmentActivity  implements NoticeDialogL
 	@Override
 	public void onDialogPositiveClick(DialogFragment dialog) {
 		AlbumListDialogFragment albumListDialog = (AlbumListDialogFragment) dialog;
-		mSelectedItems = albumListDialog.getmSelectedAlbumItems();		
+		mSelectedItems = albumListDialog.getmSelectedAlbumItems();
+		if(isUpdate) {
+			removeAndInsertGroupEvent();
+		}
+	}
+
+	/**
+	 * Remove all group event items for a specific event. And insert the new groups.
+	 */
+	private int removeAndInsertGroupEvent() {
+		int affected = 0;
+		ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
+		if(mSelectedItems != null) {
+			ops.add(ContentProviderOperation.newDelete(DadhooDB.GroupEvents.GROUP_EVENTS_CONTENT_URI)
+					.withSelection(DadhooDB.GroupEvents.EVENT_ID + " = ?", new String[] {Long.toString(event_id)})
+					.build());
+			for(Integer element : mSelectedItems) {
+				ops.add(ContentProviderOperation.newInsert(DadhooDB.GroupEvents.GROUP_EVENTS_CONTENT_URI)
+						.withValue(DadhooDB.Events.MODIFIED, new Date().getTime())
+						.withValue(DadhooDB.GroupEvents.EVENT_ID, event_id)
+						.withValue(DadhooDB.GroupEvents.ALBUM_ID, element)
+						.build());
+			}
+		}
+		
+		try {
+			ContentProviderResult[] applyBatch = getContentResolver().applyBatch(DadhooDB.AUTHORITY, ops);
+			affected = applyBatch.length;
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (OperationApplicationException e) {
+			e.printStackTrace();
+		}
+		
+		return affected;
 	}
 
 	@Override

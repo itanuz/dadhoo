@@ -50,7 +50,7 @@ public class DadhooContentProvider extends ContentProvider {
         sUriMatcher.addURI(DadhooDB.AUTHORITY, DadhooDB.Events.EVENT_NAME, EVENTS);
         sUriMatcher.addURI(DadhooDB.AUTHORITY, DadhooDB.Events.EVENT_NAME + "/#", EVENT_ID);
         sUriMatcher.addURI(DadhooDB.AUTHORITY, DadhooDB.GroupEvents.GROUP_EVENT_NAME, GROUP_EVENTS);
-        sUriMatcher.addURI(DadhooDB.AUTHORITY, DadhooDB.Events.EVENT_NAME + "/#", GROUP_EVENT_ID);
+        sUriMatcher.addURI(DadhooDB.AUTHORITY, DadhooDB.GroupEvents.GROUP_EVENT_NAME + "/#", GROUP_EVENT_ID);
     }
 
     private DadhooDbHelper mOpenDbHelper;
@@ -193,6 +193,12 @@ public class DadhooContentProvider extends ContentProvider {
 		case PICTURES:
 			affected = db.delete(DadhooDbHelper.PICTURE_TABLE_NAME, selection, selectionArgs);
 			break;
+		case EVENTS:
+			affected = db.delete(DadhooDbHelper.EVENT_TABLE_NAME, selection, selectionArgs);
+			break;
+		case GROUP_EVENTS:
+			affected = db.delete(DadhooDbHelper.GROUP_EVENTS_TABLE_NAME, selection, selectionArgs);
+			break;	
 		default:
 			throw new IllegalArgumentException("unsupported uri " + uri);
 			}
