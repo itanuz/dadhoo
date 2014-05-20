@@ -155,7 +155,6 @@ public class AlbumListDialogFragment extends DialogFragment {
 	           })
 			.setPositiveButton("OK",new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog,int id) {
-					// if this button is clicked, send the positive event back to the activity
 					// Send the positive button event back to the host activity
                     mListener.onDialogPositiveClick(AlbumListDialogFragment.this);
 				}
