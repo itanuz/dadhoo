@@ -37,6 +37,8 @@ public class DadhooContentProvider extends ContentProvider {
     private static final int EVENTS = 5;//all events
     private static final int EVENT_ID = 6;//only one event
     
+    private static final int GROUP_EVENTS = 7;//all group_events
+    private static final int GROUP_EVENT_ID = 8;//only one group_event
     
     private static UriMatcher sUriMatcher;
     static {
@@ -47,6 +49,8 @@ public class DadhooContentProvider extends ContentProvider {
         sUriMatcher.addURI(DadhooDB.AUTHORITY, DadhooDB.Pictures.PICTURE_NAME + "/#", PICTURE_ID);
         sUriMatcher.addURI(DadhooDB.AUTHORITY, DadhooDB.Events.EVENT_NAME, EVENTS);
         sUriMatcher.addURI(DadhooDB.AUTHORITY, DadhooDB.Events.EVENT_NAME + "/#", EVENT_ID);
+        sUriMatcher.addURI(DadhooDB.AUTHORITY, DadhooDB.GroupEvents.GROUP_EVENT_NAME, GROUP_EVENTS);
+        sUriMatcher.addURI(DadhooDB.AUTHORITY, DadhooDB.Events.EVENT_NAME + "/#", GROUP_EVENT_ID);
     }
 
     private DadhooDbHelper mOpenDbHelper;
@@ -116,9 +120,32 @@ public class DadhooContentProvider extends ContentProvider {
                 						null, 
                 						orderByModified);
                 cursor.setNotificationUri(getContext().getContentResolver(), DadhooDB.Events.EVENTS_CONTENT_URI);
+                break;
+            case EVENT_ID:
+            	//query one event based on a specific ID
+            	long eventID = ContentUris.parseId(uri);
+                cursor = getDb().query(DadhooDbHelper.EVENT_TABLE_NAME, 
+                						projection,
+                						BaseColumns._ID + " = " + eventID, 
+                						selectionArgs,
+                						null, 
+                						null, 
+                						orderByModified);
+                cursor.setNotificationUri(getContext().getContentResolver(), DadhooDB.Events.EVENTS_CONTENT_URI);
+                break;
+            case GROUP_EVENTS:
+            	//query all grroup_events items
+                cursor = getDb().query(DadhooDbHelper.GROUP_EVENTS_TABLE_NAME, 
+                						projection,
+                						selection, 
+                						selectionArgs,
+                						null, 
+                						null, 
+                						orderByModified);
+                cursor.setNotificationUri(getContext().getContentResolver(), DadhooDB.GroupEvents.GROUP_EVENTS_CONTENT_URI);
                 break;    
             default:
-                throw new IllegalArgumentException("unsupported uri: " + uri);
+                throw new IllegalArgumentException("Unsupported uri: " + uri);
         }
 
         return cursor;
@@ -140,8 +167,14 @@ public class DadhooContentProvider extends ContentProvider {
 		case PICTURES:
 			affected = db.update(DadhooDbHelper.PICTURE_TABLE_NAME, values, selection, selectionArgs);
 			break;
+		case EVENTS:
+			affected = db.update(DadhooDbHelper.EVENT_TABLE_NAME, values, selection, selectionArgs);
+			break;
+		case GROUP_EVENTS:
+			affected = db.update(DadhooDbHelper.GROUP_EVENTS_TABLE_NAME, values, selection, selectionArgs);
+			break;	
 		default:
-			throw new IllegalArgumentException("Unknown video type: " + uri);
+			throw new IllegalArgumentException("unsupported uri: " + uri);
 			}
 		return affected;
 	}
@@ -161,7 +194,7 @@ public class DadhooContentProvider extends ContentProvider {
 			affected = db.delete(DadhooDbHelper.PICTURE_TABLE_NAME, selection, selectionArgs);
 			break;
 		default:
-			throw new IllegalArgumentException("Unknown video type: " + uri);
+			throw new IllegalArgumentException("unsupported uri " + uri);
 			}
 		return affected;
 	}
@@ -230,11 +263,19 @@ public class DadhooContentProvider extends ContentProvider {
 					return eventURi;
 				}
 				throw new SQLException("Failed to insert row into " + uri);	
-				
-				//		case EVENTS:
-	//			break;
+			case GROUP_EVENTS:
+				// verifyValues(values);
+				long grouoEventID = db.insert(DadhooDbHelper.GROUP_EVENTS_TABLE_NAME, DadhooDB.GroupEvents.GROUP_EVENT_NAME, values);
+				if (grouoEventID > 0) {
+					Uri eventURi = ContentUris.withAppendedId(DadhooDB.GroupEvents.GROUP_EVENTS_CONTENT_URI, grouoEventID);
+					getContext().getContentResolver().notifyChange(eventURi, null);
+					return eventURi;
+				}
+				throw new SQLException("Failed to insert row into " + uri);	
+	
+			
 			default:
-				throw new IllegalArgumentException("Unknown video type: " + uri);
+				throw new IllegalArgumentException("unsupported uri: " + uri);
 	}
 
 

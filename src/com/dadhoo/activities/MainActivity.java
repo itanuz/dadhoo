@@ -1,14 +1,14 @@
 package com.dadhoo.activities;
 
-import android.app.Activity;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
@@ -24,7 +24,7 @@ import com.dadhoo.fragments.AlbumFragment;
 import com.dadhoo.fragments.DrawerArrayAdapter;
 import com.dadhoo.fragments.EventListFragment;
 
-public class MainActivity extends Activity {
+public class MainActivity extends FragmentActivity {
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerListener;
@@ -81,7 +81,7 @@ public class MainActivity extends Activity {
         
         mDrawerLayout.openDrawer(mDrawerList);
         
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         
         //if (isAlbumCreated) {//add album fragment
@@ -145,7 +145,7 @@ public class MainActivity extends Activity {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         	 mDrawerList.setItemChecked(position, true);
              setTitle(mLinkTitle[position]);
-             FragmentManager fragmentManager = getFragmentManager();
+             FragmentManager fragmentManager = getSupportFragmentManager();
              FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
              switch (position) {
 	     		case 0://new event

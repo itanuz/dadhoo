@@ -36,10 +36,11 @@ import android.widget.Toast;
 import com.dadhoo.R;
 import com.dadhoo.database.DadhooDB;
 import com.dadhoo.fragments.AlbumListDialogFragment;
+import com.dadhoo.fragments.AlbumListDialogFragment.NoticeDialogListener;
 import com.dadhoo.util.ImageFetcherFromFile;
 import com.dadhoo.util.Utils;
 
-public class NewEventActivity extends FragmentActivity {
+public class NewEventActivity extends FragmentActivity  implements NoticeDialogListener {
 	
 	private static final String TAG = "NewEventActivity";
 	
@@ -64,6 +65,8 @@ public class NewEventActivity extends FragmentActivity {
 
 	private ArrayList<Integer> mSelectedItems;
 
+	private Cursor mCursorGroupEvent;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -94,16 +97,49 @@ public class NewEventActivity extends FragmentActivity {
 		mEventNoteText = (EditText) findViewById(R.id.edit_note_event);
 		mEventImage = (ImageView) findViewById(R.id.image_event);
 		
+		if (getIntent().getExtras() != null) {
+			event_id = getIntent().getExtras().getLong("event_id");
+			isUpdate = true;
+		}
 		
+		if (isUpdate) {//then load all fields for the event
+			CursorLoader cursorLoaderEvent = new CursorLoader(this, 
+					 DadhooDB.Events.EVENTS_CONTENT_URI, 
+					 null, 
+					 BaseColumns._ID + " = ?",
+					 new String[] {Long.toString(event_id)}, 
+					 null);
+			Cursor cursorEvent = cursorLoaderEvent.loadInBackground();
+			
+			CursorLoader cursorLoaderGroupEvent = new CursorLoader(this, 
+					 DadhooDB.GroupEvents.GROUP_EVENTS_CONTENT_URI, 
+					 null, 
+					 DadhooDB.GroupEvents.EVENT_ID + " = ?",
+					 new String[] {Long.toString(event_id)}, 
+					 null);
+			mCursorGroupEvent = cursorLoaderGroupEvent.loadInBackground();
+			
+			if(cursorEvent.moveToFirst()){
+				mEventNoteText.setText(cursorEvent.getString(2));
+				String pictureContentUriString = cursorEvent.getString(5);
+				if (pictureContentUriString != null) {
+					pictureContentUri = ContentUris.withAppendedId(DadhooDB.Pictures.PICTURE_CONTENT_URI, Long.parseLong(pictureContentUriString));
+					mImageFetcher.loadImage(Uri.parse(Utils.getPicturePath(pictureContentUri, this)), mEventImage);
+				}
+			}
+			cursorEvent.close();
+		}
+		
+		//Add the button to show the dialog in order to choose one or more album
 		Button addAlbumsButton = (Button) findViewById(R.id.button1);
 		addAlbumsButton.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View arg0) {
-					DialogFragment listOfAlbum = new AlbumListDialogFragment();
+					DialogFragment listOfAlbum = AlbumListDialogFragment.newInstance(mCursorGroupEvent);
 					listOfAlbum.show(getSupportFragmentManager(), "ALBUM_LIST_DIALOG");
 				}
 		});
-			
+		
 		setupActionBar();
 	}
 
@@ -129,10 +165,10 @@ public class NewEventActivity extends FragmentActivity {
 				return true;
 			case R.id.action_done:
 				if(isUpdate) {//Update an album and a picture if necessary
-					int rowAffected = updateAlbum();
+					int rowAffected = updateEvent();
 					if(rowAffected != 0) {
 						Intent intent = new Intent(this, MainActivity.class);
-						intent.putExtra("albums_list", true);
+						intent.putExtra("event_list", true);
 						Toast.makeText(this, "updated", Toast.LENGTH_LONG).show();
 						startActivity(intent);
 					} else {
@@ -195,18 +231,18 @@ public class NewEventActivity extends FragmentActivity {
 	}
 
 	/**
-	 * Update the Album item and the related picture only if it has been modified.
+	 * Update the Event item and the related picture only if it has been modified.
 	 * This method uses the <a>DadhooContentProvider.applyBatch()</a> method
 	 * 
 	 * @return number of rows affected
 	 */
-	private int updateAlbum() {
+	private int updateEvent() {
 		int affected = 0;
 		ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
-		ops.add(ContentProviderOperation.newUpdate(DadhooDB.Albums.ALBUMS_CONTENT_URI)
+		ops.add(ContentProviderOperation.newUpdate(DadhooDB.Events.EVENTS_CONTENT_URI)
 				.withSelection(BaseColumns._ID + " = ?", new String[] {Long.toString(event_id)})
-				.withValue(DadhooDB.Albums.TITLE, mEventNoteText.getText().toString())
-				.withValue(DadhooDB.Albums.TIMESTAMP, new Date().getTime())
+				.withValue(DadhooDB.Events.NOTE, mEventNoteText.getText().toString())
+				.withValue(DadhooDB.Events.MODIFIED, new Date().getTime())
 				.build());
 		if (pictureFileUri != null) {
 			ops.add(ContentProviderOperation.newUpdate(DadhooDB.Pictures.PICTURE_CONTENT_URI)
@@ -248,6 +284,15 @@ public class NewEventActivity extends FragmentActivity {
 					.withValue(DadhooDB.Events.MODIFIED, new Date().getTime())
 					.withValueBackReference(DadhooDB.Events.PICTURE_ID, 0)
 					.build());
+			if(mSelectedItems != null) {
+				for(Integer element : mSelectedItems) {
+					ops.add(ContentProviderOperation.newInsert(DadhooDB.GroupEvents.GROUP_EVENTS_CONTENT_URI)
+							.withValue(DadhooDB.Events.MODIFIED, new Date().getTime())
+							.withValueBackReference(DadhooDB.GroupEvents.EVENT_ID, 1)
+							.withValue(DadhooDB.GroupEvents.ALBUM_ID, element)
+							.build());
+				}
+			}
 		}
 
 		if (pictureFileUri == null && !mEventNoteText.getText().toString().isEmpty()) {
@@ -316,5 +361,17 @@ public class NewEventActivity extends FragmentActivity {
 	            // Image capture failed, advise user
 	        }
 	    }
+	}
+
+	@Override
+	public void onDialogPositiveClick(DialogFragment dialog) {
+		AlbumListDialogFragment albumListDialog = (AlbumListDialogFragment) dialog;
+		mSelectedItems = albumListDialog.getmSelectedAlbumItems();		
+	}
+
+	@Override
+	public void onDialogNegativeClick(DialogFragment dialog) {
+		// TODO Auto-generated method stub
+		
 	}
 }

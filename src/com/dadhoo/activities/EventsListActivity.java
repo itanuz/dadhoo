@@ -1,12 +1,12 @@
 package com.dadhoo.activities;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NavUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,14 +14,14 @@ import android.view.MenuItem;
 import com.dadhoo.R;
 import com.dadhoo.fragments.EventListFragment;
 
-public class EventsListActivity extends Activity {
+public class EventsListActivity extends FragmentActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.activity_events_list_view);
 		
-		FragmentManager fragmentMgr = getFragmentManager();
+		FragmentManager fragmentMgr = getSupportFragmentManager();
 		FragmentTransaction fragmentTx = fragmentMgr.beginTransaction();
 		if (null == fragmentMgr.findFragmentByTag("FRAG_EVENTS_FILTERED")) {
 			fragmentTx.add(R.id.event_list, new EventListFragment(), "FRAG_EVENTS_FILTERED");

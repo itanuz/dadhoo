@@ -3,13 +3,23 @@
  */
 package com.dadhoo.fragments;
 
-import android.app.ListFragment;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.FrameLayout;
+import android.widget.GridView;
+import android.widget.Toast;
 
 import com.dadhoo.R;
+import com.dadhoo.activities.NewEventActivity;
 import com.dadhoo.database.DadhooDB;
 import com.dadhoo.util.ImageFetcherFromFile;
 
@@ -17,7 +27,7 @@ import com.dadhoo.util.ImageFetcherFromFile;
  * @author gaecarme
  *
  */
-public class EventListFragment extends ListFragment {
+public class EventListFragment extends Fragment {
 	
 	private static final String TAG = "EventListFragment";
 	
@@ -25,7 +35,7 @@ public class EventListFragment extends ListFragment {
 	private ImageFetcherFromFile mImageFetcher;
 	
     @Override
-	public void onCreate(Bundle savedInstanceState) {
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);	
 
     	mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
@@ -33,6 +43,10 @@ public class EventListFragment extends ListFragment {
     	// The ImageFetcher takes care of loading images into our ImageView children asynchronously
     	mImageFetcher = new ImageFetcherFromFile(getActivity(), mImageThumbSize);
 
+    	View rootView = inflater.inflate(R.layout.framelayout_event_list, container, false);
+    	GridView gridView = (GridView) rootView.findViewById(R.id.image_event);
+    	
+    	
   		CursorLoader cursorLoader = new CursorLoader(this.getActivity(), 
   												 DadhooDB.Events.EVENTS_CONTENT_URI, 
   												 null, 
@@ -51,7 +65,7 @@ public class EventListFragment extends ListFragment {
 		
 		if(eventsCursor.moveToFirst()){//there are events  
 			Log.d(TAG, "Ther are events");
-			setListAdapter(eventAdapter);
+			gridView.setAdapter(eventAdapter);
 //	        gridView.setOnItemClickListener(new OnItemClickListener() {
 //	        	public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
 //	            	boolean useFragment = false;
@@ -66,26 +80,26 @@ public class EventListFragment extends ListFragment {
 //	            }
 //	        });
 	        
-//	        gridView.setOnItemLongClickListener(new OnItemLongClickListener() {
+	        gridView.setOnItemLongClickListener(new OnItemLongClickListener() {
 	
-//				@Override
-//				public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-//	            	boolean useFragment = false;
-//	            	Toast.makeText(getActivity(), 
-//	            					"POSITION: " + position + " ID: " + id, 	
-//	            					Toast.LENGTH_SHORT).
-//	            					show();
-//	
-//	            	if (useFragment) { //multi-pane
-//	            		//update the fragment contained in the getActivity()
-//	            	} else {//one-pane call the activity
-//		            	Intent intent = new Intent(getActivity(), NewAlbumActivity.class);
-//		            	intent.putExtra("album_id", id);
-//		            	startActivity(intent);
-//	            	}
-//					return true;
-//				}
-//	        });
+				@Override
+				public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+	            	boolean useFragment = false;
+	            	Toast.makeText(getActivity(), 
+	            					"POSITION: " + position + " ID: " + id, 	
+	            					Toast.LENGTH_SHORT).
+	            					show();
+	
+	            	if (useFragment) { //multi-pane
+	            		//update the fragment contained in the getActivity()
+	            	} else {//one-pane call the activity
+		            	Intent intent = new Intent(getActivity(), NewEventActivity.class);
+		            	intent.putExtra("event_id", id);
+		            	startActivity(intent);
+	            	}
+					return true;
+				}
+	        });
 		} else {//there are not album yet. Show an icon to easily create one
 			
 			System.out.println("NO events yet");
@@ -103,7 +117,7 @@ public class EventListFragment extends ListFragment {
 //	        });
 		}
 
-//      return gridView;
+      return gridView;
   
 	}
 }

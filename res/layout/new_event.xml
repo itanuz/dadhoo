@@ -1,8 +1,9 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content" >
-
+    android:layout_height="wrap_content"
+    android:id="@+id/crud_event">
+    
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -31,7 +32,7 @@
             android:layout_alignRight="@+id/image_event"
             android:layout_below="@+id/image_event"
             android:layout_marginTop="16dp"
-            android:ems="10"
+            android:ems="20"
             android:hint="@string/write_some_notes"
             android:inputType="textMultiLine"
             android:textStyle="bold" 

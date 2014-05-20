@@ -3,17 +3,16 @@
  */
 package com.dadhoo.database;
 
+import com.dadhoo.provider.DadhooContentProvider;
+
 import android.net.Uri;
 import android.provider.BaseColumns;
 
 /**
- * @author gaecarme Public API for the example FinchVideo caching content
- *         provider example.
+ * @author gaecarme 
  * 
- *         The public API for a content provider should only contain information
- *         that should be referenced by content provider clients. Implementation
- *         details such as constants only used by a content provider subclass
- *         should not appear in the provider API.
+ * This class contains constants to be used by the database helper {@link DadhooDbHelper}
+ * and the ContentProvider {@link DadhooContentProvider} 
  * 
  */
 public final class DadhooDB {
@@ -55,7 +54,7 @@ public final class DadhooDB {
 		public static final String TITLE = "title";
 
 		/**
-		 * The picture_uri itself
+		 * The picture_id itself
 		 */
 		public static final String PICTURE_ID = "picture_id";
 		
@@ -122,7 +121,7 @@ public final class DadhooDB {
 		public static final String MODIFIED = "modified";
 		
 		/**
-		 * The picture_uri itself
+		 * The picture_id itself
 		 */
 		public static final String PICTURE_ID = "picture_id";
 		
@@ -160,8 +159,53 @@ public final class DadhooDB {
 		 * The field containing the physical path of the picture on the file system 
 		 */
 		public static final String _DATA = "_data";
-		
 	
 	}
+	
+	/**
+	 * Events columns
+	 */
+	public static final class GroupEvents implements BaseColumns {
+		public static final String DEFAULT_SORT_ORDER = "modified DESC";
+
+		// This class cannot be instantiated
+		private GroupEvents() {
+		}
+
+		/**
+		 * The group_events itself
+		 */
+		public static final String GROUP_EVENT_NAME = "group_event";
+
+		/**
+		 *  URI that references all events
+		 */
+		public static final Uri GROUP_EVENTS_CONTENT_URI = Uri.parse("content://"	+ AUTHORITY + "/" + GROUP_EVENT_NAME);
+
+		/**
+		 * The MIME type of {@link #GROUP_EVENTS_CONTENT_URI} providing a list of event.
+		 */
+		public static final String GROUP_EVENT_DIR_CONTENT_TYPE = "vnd.android.cursor.dir/vnd.com.dadhoo.provider.group_event";
+
+		/**
+		 * The MIME type of a {@link #GROUP_EVENTS_CONTENT_URI} sub-directory of a single album.
+		 */
+		public static final String GROUP_EVENT_ITEM_CONTENT_TYPE = "vnd.android.cursor.item/vnd.com.dadhoo.provider.group_event";
+
+		/**
+		 * The event id
+		 */
+		public static final String EVENT_ID = "event_id";
+
+		/**
+		 * The album id
+		 */
+		public static final String ALBUM_ID = "album_id";
 		
+		/**
+		 * Name of the column that contains the time stamp when an album
+		 * element was modified into the DadhooContentProvider database.
+		 */
+		public static final String MODIFIED = "modified";
+	}
 }
