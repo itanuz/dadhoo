@@ -87,8 +87,10 @@ public final class DadhooDB {
 		 *  URI that references all events
 		 */
 		public static final Uri EVENTS_CONTENT_URI = Uri.parse("content://"	+ AUTHORITY + "/" + Events.EVENT_NAME);
+		
+		public static final Uri EVENT_ID_CONTENT_URI = Uri.parse("content://"	+ AUTHORITY + "/" + Events.EVENT_NAME + "/#");
 
-		public static final Uri EVENTS_JOIN_ALBUM_CONTENT_URI = Uri.parse("content://"	+ AUTHORITY + "/" + Albums.ALBUM_NAME + "/" + "#" + "/" + Events.EVENT_NAME);
+		public static final Uri FILTER_EVENTS_BY_ALBUM_ID_URI = Uri.parse("content://"	+ AUTHORITY + "/" + Albums.ALBUM_NAME + "/" + "#" + "/" + Events.EVENT_NAME);
 		
 		/**
 		 * The MIME type of {@link #EVENTS_CONTENT_URI} providing a list of event.
@@ -183,6 +185,12 @@ public final class DadhooDB {
 		 *  URI that references all events
 		 */
 		public static final Uri GROUP_EVENTS_CONTENT_URI = Uri.parse("content://"	+ AUTHORITY + "/" + GROUP_EVENT_NAME);
+		
+		/**
+		 *  URI that references all events
+		 */
+		public static final Uri GROUP_EVENTS_BY_ALBUM_CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + 
+																							Albums.ALBUM_NAME + "/#/" + Events.EVENT_NAME + "/#");
 
 		/**
 		 * The MIME type of {@link #GROUP_EVENTS_CONTENT_URI} providing a list of event.

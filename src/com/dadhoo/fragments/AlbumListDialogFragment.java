@@ -98,18 +98,18 @@ public class AlbumListDialogFragment extends DialogFragment {
 		
 		//Select all albums
 		CursorLoader cursorLoaderAlbum = new CursorLoader(this.getActivity(), 
-				DadhooDB.Albums.ALBUMS_CONTENT_URI, 
-				null, 
-				null,
-				null, 
-				null);
+															DadhooDB.Albums.ALBUMS_CONTENT_URI, 
+															null, 
+															null,
+															null, 
+															null);
 		
 		Cursor cursorAlbum = cursorLoaderAlbum.loadInBackground();
 		
 		final int[] albumIds = new int[cursorAlbum.getCount()];
 		//Title list to pass to the dialog
 		CharSequence[] albumTitles = new CharSequence[cursorAlbum.getCount()];
-		//array to store which album has been selected
+		//array to store which album has been selected via the dialog UI
 		boolean[] selected = new boolean[cursorAlbum.getCount()];
 		
 		mSelectedAlbumItems = new ArrayList<Integer>(); 

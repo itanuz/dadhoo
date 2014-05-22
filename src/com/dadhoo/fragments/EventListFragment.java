@@ -119,6 +119,7 @@ public class EventListFragment extends Fragment {
 	            	} else {//one-pane call the activity
 		            	Intent intent = new Intent(getActivity(), NewEventActivity.class);
 		            	intent.putExtra("event_id", id);
+		            	intent.putExtra("album_id", album_id);
 		            	startActivity(intent);
 	            	}
 					return true;

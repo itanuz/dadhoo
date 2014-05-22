@@ -36,12 +36,15 @@ import android.widget.Toast;
 
 import com.dadhoo.R;
 import com.dadhoo.database.DadhooDB;
+import com.dadhoo.database.DadhooDB.Albums;
+import com.dadhoo.database.DadhooDB.Events;
+import com.dadhoo.database.DadhooDB.GroupEvents;
 import com.dadhoo.fragments.AlbumListDialogFragment;
 import com.dadhoo.fragments.AlbumListDialogFragment.NoticeDialogListener;
 import com.dadhoo.util.ImageFetcherFromFile;
 import com.dadhoo.util.Utils;
 
-public class NewEventActivity extends FragmentActivity  implements NoticeDialogListener {
+public class NewEventActivity extends FragmentActivity implements NoticeDialogListener {
 	
 	private static final String TAG = "NewEventActivity";
 	
@@ -56,6 +59,7 @@ public class NewEventActivity extends FragmentActivity  implements NoticeDialogL
 	private ImageView mEventImage;
 	
 	private long event_id = -1;
+	private long album_id = -1;
 	private boolean isUpdate = false;
 
 	private int mImageThumbSize;
@@ -102,6 +106,7 @@ public class NewEventActivity extends FragmentActivity  implements NoticeDialogL
 		
 		if (getIntent().getExtras() != null) {
 			event_id = getIntent().getExtras().getLong("event_id");
+			album_id = getIntent().getExtras().getLong("album_id");
 			isUpdate = true;
 		}
 		
@@ -191,7 +196,7 @@ public class NewEventActivity extends FragmentActivity  implements NoticeDialogL
 				}
 				return true;
 			case R.id.action_delete:
-				int rowAffected = deleteAlbum();
+				int rowAffected = deleteEvent();
 				if(rowAffected != 0) { 
 					Intent intent = new Intent(this, MainActivity.class);
 					intent.putExtra("albums_list", true);
@@ -208,7 +213,7 @@ public class NewEventActivity extends FragmentActivity  implements NoticeDialogL
 		return super.onOptionsItemSelected(item);
 	}
 
-	private int deleteAlbum() {
+	private int deleteEvent() {
 		int affected = 0;
 		ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
 		if (pictureFileUri != null) {
@@ -216,7 +221,7 @@ public class NewEventActivity extends FragmentActivity  implements NoticeDialogL
 					.withSelection(BaseColumns._ID + " = ?", new String[] {pictureContentUri.getLastPathSegment()})
 					.build());
 		}
-		ops.add(ContentProviderOperation.newDelete(DadhooDB.Albums.ALBUMS_CONTENT_URI)
+		ops.add(ContentProviderOperation.newDelete(Uri.withAppendedPath(DadhooDB.Events.EVENT_ID_CONTENT_URI, Long.toString(event_id)))
 				.withSelection(BaseColumns._ID + " = ?", new String[] {Long.toString(event_id)})
 				.build());
 
@@ -386,11 +391,12 @@ public class NewEventActivity extends FragmentActivity  implements NoticeDialogL
 			ops.add(ContentProviderOperation.newDelete(DadhooDB.GroupEvents.GROUP_EVENTS_CONTENT_URI)
 					.withSelection(DadhooDB.GroupEvents.EVENT_ID + " = ?", new String[] {Long.toString(event_id)})
 					.build());
-			for(Integer element : mSelectedItems) {
-				ops.add(ContentProviderOperation.newInsert(DadhooDB.GroupEvents.GROUP_EVENTS_CONTENT_URI)
+			for(Integer albumId : mSelectedItems) {
+				Uri uri = Uri.parse("content://" + DadhooDB.AUTHORITY + "/" + Albums.ALBUM_NAME + "/" + album_id + "/" + GroupEvents.GROUP_EVENT_NAME + "/" + event_id);
+				ops.add(ContentProviderOperation.newInsert(uri)
 						.withValue(DadhooDB.Events.MODIFIED, new Date().getTime())
 						.withValue(DadhooDB.GroupEvents.EVENT_ID, event_id)
-						.withValue(DadhooDB.GroupEvents.ALBUM_ID, element)
+						.withValue(DadhooDB.GroupEvents.ALBUM_ID, albumId)
 						.build());
 			}
 		}
