@@ -88,6 +88,8 @@ public final class DadhooDB {
 		 */
 		public static final Uri EVENTS_CONTENT_URI = Uri.parse("content://"	+ AUTHORITY + "/" + Events.EVENT_NAME);
 
+		public static final Uri EVENTS_JOIN_ALBUM_CONTENT_URI = Uri.parse("content://"	+ AUTHORITY + "/" + Albums.ALBUM_NAME + "/" + "#" + "/" + Events.EVENT_NAME);
+		
 		/**
 		 * The MIME type of {@link #EVENTS_CONTENT_URI} providing a list of event.
 		 */

@@ -36,6 +36,7 @@ public class DadhooContentProvider extends ContentProvider {
     
     private static final int EVENTS = 5;//all events
     private static final int EVENT_ID = 6;//only one event
+    private static final int FILTER_EVENTS_BY_ALBUM_ID = 9;//only one event
     
     private static final int GROUP_EVENTS = 7;//all group_events
     private static final int GROUP_EVENT_ID = 8;//only one group_event
@@ -48,7 +49,8 @@ public class DadhooContentProvider extends ContentProvider {
         sUriMatcher.addURI(DadhooDB.AUTHORITY, DadhooDB.Pictures.PICTURE_NAME, PICTURES);
         sUriMatcher.addURI(DadhooDB.AUTHORITY, DadhooDB.Pictures.PICTURE_NAME + "/#", PICTURE_ID);
         sUriMatcher.addURI(DadhooDB.AUTHORITY, DadhooDB.Events.EVENT_NAME, EVENTS);
-        sUriMatcher.addURI(DadhooDB.AUTHORITY, DadhooDB.Events.EVENT_NAME + "/#", EVENT_ID);
+        sUriMatcher.addURI(DadhooDB.AUTHORITY, DadhooDB.Albums.ALBUM_NAME + "/#/" + DadhooDB.Events.EVENT_NAME, FILTER_EVENTS_BY_ALBUM_ID);
+        sUriMatcher.addURI(DadhooDB.AUTHORITY, DadhooDB.Albums.ALBUM_NAME + "/#", EVENT_ID);
         sUriMatcher.addURI(DadhooDB.AUTHORITY, DadhooDB.GroupEvents.GROUP_EVENT_NAME, GROUP_EVENTS);
         sUriMatcher.addURI(DadhooDB.AUTHORITY, DadhooDB.GroupEvents.GROUP_EVENT_NAME + "/#", GROUP_EVENT_ID);
     }
@@ -133,6 +135,18 @@ public class DadhooContentProvider extends ContentProvider {
                 						orderByModified);
                 cursor.setNotificationUri(getContext().getContentResolver(), DadhooDB.Events.EVENTS_CONTENT_URI);
                 break;
+            case FILTER_EVENTS_BY_ALBUM_ID:
+            	//query one event based on a specific ID
+            	long albumId =  Long.parseLong(uri.getPathSegments().get(1));
+                cursor = getDb().rawQuery("SELECT e.* " +
+                							" FROM events e, group_events ge, albums a " +
+                							"  WHERE a._id = ge.album_id " +
+                									" and e._id = ge.event_id " +
+                									" and a._id = ?", 
+                						   new String[] {Long.toString(albumId)});
+                cursor.setNotificationUri(getContext().getContentResolver(), DadhooDB.Events.EVENTS_CONTENT_URI);
+                break;
+                 
             case GROUP_EVENTS:
             	//query all grroup_events items
                 cursor = getDb().query(DadhooDbHelper.GROUP_EVENTS_TABLE_NAME, 

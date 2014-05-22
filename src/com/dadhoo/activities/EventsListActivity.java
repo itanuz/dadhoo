@@ -15,16 +15,23 @@ import com.dadhoo.R;
 import com.dadhoo.fragments.EventListFragment;
 
 public class EventsListActivity extends FragmentActivity {
+	private Long album_id;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		if (getIntent().getExtras() != null) {
+			album_id  = getIntent().getExtras().getLong("album_id");
+		}
 
 		setContentView(R.layout.activity_events_list_view);
 		
 		FragmentManager fragmentMgr = getSupportFragmentManager();
 		FragmentTransaction fragmentTx = fragmentMgr.beginTransaction();
-		if (null == fragmentMgr.findFragmentByTag("FRAG_EVENTS_FILTERED")) {
-			fragmentTx.add(R.id.event_list, new EventListFragment(), "FRAG_EVENTS_FILTERED");
+		if (null == fragmentMgr.findFragmentByTag("FRAG_EVENTS_FILTERED_BY_ALBUM_ID")) {
+			fragmentTx.add(R.id.event_list, null != album_id ? EventListFragment.newInstance(album_id) : new EventListFragment(), 
+					"FRAG_EVENTS_FILTERED_BY_ALBUM_ID");
 		}
 		fragmentTx.addToBackStack(null);
 		fragmentTx.commit();

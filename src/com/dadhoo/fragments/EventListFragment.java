@@ -6,6 +6,7 @@ package com.dadhoo.fragments;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -21,6 +22,7 @@ import android.widget.Toast;
 import com.dadhoo.R;
 import com.dadhoo.activities.NewEventActivity;
 import com.dadhoo.database.DadhooDB;
+import com.dadhoo.database.DadhooDbHelper;
 import com.dadhoo.util.ImageFetcherFromFile;
 
 /**
@@ -33,6 +35,23 @@ public class EventListFragment extends Fragment {
 	
 	private int mImageThumbSize;
 	private ImageFetcherFromFile mImageFetcher;
+
+	private Long album_id;
+	
+	public static Fragment newInstance(Long album_id) {
+		Log.d(TAG, "New Instance");
+		EventListFragment fragment = new EventListFragment();
+		Bundle fragmentArgs = new Bundle();
+		fragmentArgs.putLong("ALBUM_ID", album_id);
+		fragment.setArguments(fragmentArgs); 
+		return fragment;
+	}
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		album_id = getArguments() != null ? getArguments().getLong("ALBUM_ID") : null;	
+	}
 	
     @Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -46,13 +65,18 @@ public class EventListFragment extends Fragment {
     	View rootView = inflater.inflate(R.layout.framelayout_event_list, container, false);
     	GridView gridView = (GridView) rootView.findViewById(R.id.image_event);
     	
+    	Uri uri = DadhooDB.Events.EVENTS_CONTENT_URI;
+    	
+    	if(album_id != null) {
+    		uri = Uri.parse("content://com.dadhoo.provider.dadhoocontentprovider/album/" + album_id + "/event");
+    	}
     	
   		CursorLoader cursorLoader = new CursorLoader(this.getActivity(), 
-  												 DadhooDB.Events.EVENTS_CONTENT_URI, 
-  												 null, 
-  												 null, 
-  												 null, 
-  												 null);
+  													uri, 
+  												 	null, 
+  												 	null, 
+  												 	null, 
+  												 	null);
   		Cursor eventsCursor = cursorLoader.loadInBackground();
 		
 		EventAdapter eventAdapter = new EventAdapter(this.getActivity(), 

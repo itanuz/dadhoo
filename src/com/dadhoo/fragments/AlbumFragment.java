@@ -120,6 +120,13 @@ public class AlbumFragment extends Fragment {
 	}
 }
 
+
+/**
+ * 
+ * Adapter used to show an image to add a new album if there is not any yet
+ * @author gaecarme
+ *
+ */
 class ImageAdapter extends BaseAdapter {
     private Context mContext;
     private LayoutInflater mInflater;

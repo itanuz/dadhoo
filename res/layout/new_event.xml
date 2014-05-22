@@ -21,7 +21,6 @@
             android:adjustViewBounds="true"
             android:scaleType="fitXY"
             android:src="@drawable/empty_photo">
-            <requestFocus /> 
          </ImageView>
 
         <EditText
@@ -34,25 +33,15 @@
             android:layout_marginTop="16dp"
             android:ems="20"
             android:hint="@string/write_some_notes"
-            android:inputType="textMultiLine"
-            android:textStyle="bold" 
-            />
-
-        <TextView
-            android:id="@+id/add_album_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/edit_note_event"
-            android:layout_below="@+id/edit_note_event"
-            android:layout_marginTop="22dp"
-            android:text="@string/event_spinner_text" />
+            android:inputType="textImeMultiLine"
+            android:textStyle="bold" />
 
         <Button
             android:id="@+id/button1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/edit_note_event"
             android:layout_below="@+id/edit_note_event"
-            android:layout_toRightOf="@+id/add_album_text_view"
             android:text="Albums" />
 
     </RelativeLayout>
