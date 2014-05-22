@@ -1,14 +1,14 @@
 package com.dadhoo.activities;
 
-import android.app.Activity;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
@@ -24,7 +24,7 @@ import com.dadhoo.fragments.AlbumFragment;
 import com.dadhoo.fragments.DrawerArrayAdapter;
 import com.dadhoo.fragments.EventListFragment;
 
-public class MainActivity extends Activity {
+public class MainActivity extends FragmentActivity {
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerListener;
@@ -40,9 +40,9 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         
-        if (getIntent().getExtras() != null) {
-        	isAlbumCreated = getIntent().getExtras().getBoolean("albums_list");
-        }	
+//        if (getIntent().getExtras() != null) {
+//        	isAlbumCreated = getIntent().getExtras().getBoolean("albums_list");
+//        }	
         mTitle = mDrawerTitle = getTitle();
         mLinkTitle = getResources().getStringArray(R.array.drawer_link_array);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -50,9 +50,7 @@ public class MainActivity extends Activity {
 
         // set a custom shadow that overlays the main content when the drawer opens
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
-        
         mDrawerList.setAdapter(new DrawerArrayAdapter(this, mLinkTitle, iconIds));
-        
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
         // enable ActionBar app icon to behave as action to toggle nav drawer
@@ -81,19 +79,21 @@ public class MainActivity extends Activity {
         };
         mDrawerLayout.setDrawerListener(mDrawerListener);
         
-        FragmentManager fragmentManager = getFragmentManager();
+        mDrawerLayout.openDrawer(mDrawerList);
+        
+        FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         
-        if (isAlbumCreated) {//add album fragment
+        //if (isAlbumCreated) {//add album fragment
         	if (null == fragmentManager.findFragmentByTag("FRAG_ALBUMS")) {
 	        	fragmentTransaction.add(R.id.content_frame, new AlbumFragment(), "FRAG_ALBUMS");
 	        }
         
-        } else {//add all events list
-	        if (null == fragmentManager.findFragmentByTag("FRAG_EVENTS")) {
-	        	fragmentTransaction.add(R.id.content_frame, new EventListFragment(), "FRAG_EVENTS");
-	        }
-        }
+//        } else {//add all events list
+//	        if (null == fragmentManager.findFragmentByTag("FRAG_EVENTS")) {
+//	        	fragmentTransaction.add(R.id.content_frame, new EventListFragment(), "FRAG_EVENTS");
+//	        }
+//        }
 //   		fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
@@ -145,10 +145,12 @@ public class MainActivity extends Activity {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         	 mDrawerList.setItemChecked(position, true);
              setTitle(mLinkTitle[position]);
-             FragmentManager fragmentManager = getFragmentManager();
+             FragmentManager fragmentManager = getSupportFragmentManager();
              FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
              switch (position) {
 	     		case 0://new event
+	     			Intent intentEvent = new Intent(getBaseContext(), NewEventActivity.class);
+	     			startActivity(intentEvent);
 	     			break;
 	     		case 1://new album
 	     			Intent intent = new Intent(getBaseContext(), NewAlbumActivity.class);

@@ -48,6 +48,10 @@
             android:name="com.dadhoo.activities.NewAlbumActivity"
             android:label="@string/new_album_actionbar_title" >
         </activity>
+        <activity
+            android:name="com.dadhoo.activities.NewEventActivity"
+            android:label="@string/new_event_actionbar_title" >
+        </activity>
         
         
     </application>

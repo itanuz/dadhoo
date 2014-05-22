@@ -3,9 +3,6 @@
  */
 package com.dadhoo.fragments;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
@@ -13,7 +10,6 @@ import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
@@ -36,27 +32,22 @@ public class AlbumImageAdapter extends SimpleCursorAdapter {
 	
 	public AlbumImageAdapter(Context context, int layout, Cursor c, ImageWorker worker, String[] from, int[] to, int flags) {
 		super(context, layout, c, from, to, flags);
-
 		mInflater = LayoutInflater.from(context);
 		mContext = context;
 		mCursor = c;
 		mWorker = worker;
 	}
 
-    // create a new ImageView for each item referenced by the Adapter
+    
+    /* create a new  gridview_item for each item contained in the cursor
+     * 
+     * @see android.widget.CursorAdapter#getView(int, android.view.View, android.view.ViewGroup)
+     */
     public View getView(int position, View convertView, ViewGroup parent) {
         View v = convertView;
     	ImageView picture;
         TextView name;
-//    	
-//        if (convertView == null) {  // if it's not recycled, initialize some attributes
-//            imageView = new ImageView(mContext);
-//            imageView.setLayoutParams(new GridView.LayoutParams(250, 250));
-//            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-//            imageView.setPadding(5, 5, 5, 5);
-//            
-//        } 
-        
+     
         if(v == null) {
            v = mInflater.inflate(R.layout.gridview_item, parent, false);
            v.setTag(R.id.picture, v.findViewById(R.id.picture));
@@ -84,25 +75,6 @@ public class AlbumImageAdapter extends SimpleCursorAdapter {
         name.setText(title);
     	
         return v;
-    }
-
-    // references to our images
-    private final List<Uri> mThumbUris = new ArrayList<Uri>();
-    
-    public void addPictureFileUri(Uri pictureFileUri) {
-    	this.mThumbUris.add(pictureFileUri);
-    }
-    
-    private class Item
-    {
-        final String name;
-        final int drawableId;
-
-        Item(String name, int drawableId)
-        {
-            this.name = name;
-            this.drawableId = drawableId;
-        }
     }
 }
 
