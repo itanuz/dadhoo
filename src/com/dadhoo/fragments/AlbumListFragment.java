@@ -25,7 +25,9 @@ import android.widget.Toast;
 import com.dadhoo.R;
 import com.dadhoo.activities.EventsListActivity;
 import com.dadhoo.activities.NewAlbumActivity;
+import com.dadhoo.adapters.AlbumImageAdapter;
 import com.dadhoo.database.DadhooDB;
+import com.dadhoo.database.pojo.Album;
 import com.dadhoo.util.ImageFetcherFromFile;
 
 /**
@@ -34,7 +36,7 @@ import com.dadhoo.util.ImageFetcherFromFile;
  *
  */
 
-public class AlbumFragment extends Fragment {
+public class AlbumListFragment extends Fragment {
 
     private int mImageThumbSize;
 	private ImageFetcherFromFile mImageFetcher;
@@ -46,7 +48,7 @@ public class AlbumFragment extends Fragment {
         // The ImageFetcher takes care of loading images into our ImageView children asynchronously
         mImageFetcher = new ImageFetcherFromFile(getActivity(), mImageThumbSize);
     	
-    	View rootView = inflater.inflate(R.layout.fragment_album_list, container, false);
+    	View rootView = inflater.inflate(R.layout.fragment_container_album_list, container, false);
     	GridView gridView = (GridView) rootView.findViewById(R.id.image);
 
     	CursorLoader cursorLoader = new CursorLoader(this.getActivity(), 
@@ -69,19 +71,25 @@ public class AlbumFragment extends Fragment {
 	        gridView.setOnItemClickListener(new OnItemClickListener() {
 	        	public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
 	            	boolean useFragment = false;
+	            	
+	            	Album album = (Album) ((AlbumImageAdapter) parent.getAdapter()).getItem(position); 
+	            	
 	            	if (useFragment) { //multi-pane
 	            		//update the fragment contained in the getActivity()
 	            	} else {//one-pane call the activity
 		            	Intent intent = new Intent(getActivity(), EventsListActivity.class);
 		            	intent.putExtra("position", position);
 		            	intent.putExtra("album_id", id);
+		            	intent.putExtra("album_title", album.getTitle());
+		            	intent.putExtra("album_picture_id", album.getPictureId());
+		            	intent.putExtra("album_timestamp", album.getTimestamp());
+		            	intent.putExtra("is_update", true);
 		            	startActivity(intent);
 	            	}
 	            }
 	        });
 	        
 	        gridView.setOnItemLongClickListener(new OnItemLongClickListener() {
-	
 				@Override
 				public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
 	            	boolean useFragment = false;
@@ -95,6 +103,8 @@ public class AlbumFragment extends Fragment {
 	            	} else {//one-pane call the activity
 		            	Intent intent = new Intent(getActivity(), NewAlbumActivity.class);
 		            	intent.putExtra("album_id", id);
+		            	intent.putExtra("is_update", true);
+		            	intent.putExtra("is_edit", false);
 		            	startActivity(intent);
 	            	}
 					return true;

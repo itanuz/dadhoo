@@ -1,6 +1,5 @@
 package com.dadhoo.activities;
 
-import android.app.SearchManager;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
@@ -17,12 +16,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.dadhoo.R;
-import com.dadhoo.fragments.AlbumFragment;
-import com.dadhoo.fragments.DrawerArrayAdapter;
-import com.dadhoo.fragments.EventListFragment;
+import com.dadhoo.adapters.DrawerArrayAdapter;
+import com.dadhoo.fragments.AlbumListFragment;
 
 public class MainActivity extends FragmentActivity {
     private DrawerLayout mDrawerLayout;
@@ -38,12 +35,10 @@ public class MainActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        
-//        if (getIntent().getExtras() != null) {
-//        	isAlbumCreated = getIntent().getExtras().getBoolean("albums_list");
-//        }	
-        mTitle = mDrawerTitle = getTitle();
+        setContentView(R.layout.drawer_layout);
+
+        mTitle = getResources().getString(R.string.title_activity_albums_list);
+        mDrawerTitle = getTitle();
         mLinkTitle = getResources().getStringArray(R.array.drawer_link_array);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
@@ -78,23 +73,19 @@ public class MainActivity extends FragmentActivity {
             }
         };
         mDrawerLayout.setDrawerListener(mDrawerListener);
-        
         mDrawerLayout.openDrawer(mDrawerList);
+        
+        if (savedInstanceState != null) {
+            return;
+        }
         
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         
-        //if (isAlbumCreated) {//add album fragment
-        	if (null == fragmentManager.findFragmentByTag("FRAG_ALBUMS")) {
-	        	fragmentTransaction.add(R.id.content_frame, new AlbumFragment(), "FRAG_ALBUMS");
-	        }
+    	if (null == fragmentManager.findFragmentByTag("FRAG_ALBUMS")) {
+        	fragmentTransaction.add(R.id.content_frame, new AlbumListFragment(), "FRAG_ALBUMS");
+        }
         
-//        } else {//add all events list
-//	        if (null == fragmentManager.findFragmentByTag("FRAG_EVENTS")) {
-//	        	fragmentTransaction.add(R.id.content_frame, new EventListFragment(), "FRAG_EVENTS");
-//	        }
-//        }
-//   		fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
 
@@ -110,7 +101,7 @@ public class MainActivity extends FragmentActivity {
     public boolean onPrepareOptionsMenu(Menu menu) {
         // If the nav drawer is open, hide action items related to the content view
         boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
-        menu.findItem(R.id.action_websearch).setVisible(!drawerOpen);
+//        menu.findItem(R.id.action_websearch).setVisible(!drawerOpen);
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -121,22 +112,7 @@ public class MainActivity extends FragmentActivity {
         if (mDrawerListener.onOptionsItemSelected(item)) {
             return true;
         }
-        // Handle action buttons
-        switch(item.getItemId()) {
-        case R.id.action_websearch:
-            // create intent to perform web search for this planet
-            Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
-            intent.putExtra(SearchManager.QUERY, getActionBar().getTitle());
-            // catch event that there's no activity to handle intent
-            if (intent.resolveActivity(getPackageManager()) != null) {
-                startActivity(intent);
-            } else {
-                Toast.makeText(this, R.string.app_not_available, Toast.LENGTH_LONG).show();
-            }
-            return true;
-        default:
-            return super.onOptionsItemSelected(item);
-        }
+        return super.onOptionsItemSelected(item);
     }
 
     /* The click listner for ListView in the navigation drawer */
@@ -153,17 +129,16 @@ public class MainActivity extends FragmentActivity {
 	     			startActivity(intentEvent);
 	     			break;
 	     		case 1://new album
-	     			Intent intent = new Intent(getBaseContext(), NewAlbumActivity.class);
-	     			startActivity(intent);
+	     			Intent intentNewAlbum = new Intent(getBaseContext(), NewAlbumActivity.class);
+	     			intentNewAlbum.putExtra("is_edit", true);
+	     			startActivity(intentNewAlbum);
 	     			break;
 	     		case 2://event list
-	     			fragmentTransaction.replace(R.id.content_frame, new EventListFragment());
-	     			fragmentTransaction.addToBackStack(null);
-	     	        fragmentTransaction.commit();
+	     			Intent intentEventList = new Intent(getBaseContext(), EventsListActivity.class);
+	     			startActivity(intentEventList);
 	     			break;
 	     		case 3://album list
-	     			fragmentTransaction.replace(R.id.content_frame, new AlbumFragment());
-	     			fragmentTransaction.addToBackStack(null);
+	     			fragmentTransaction.replace(R.id.content_frame, new AlbumListFragment());
 	     	        fragmentTransaction.commit();
 	     		case 4: //replace the current fragment with the setting fragment
 	     			break;
@@ -180,7 +155,7 @@ public class MainActivity extends FragmentActivity {
         mTitle = title;
         getActionBar().setTitle(mTitle);
     }
-
+    
     /**
      * When using the ActionBarDrawerToggle, you must call it during
      * onPostCreate() and onConfigurationChanged()...
@@ -193,6 +168,8 @@ public class MainActivity extends FragmentActivity {
         mDrawerListener.syncState();
     }
 
+    
+    
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
@@ -201,8 +178,8 @@ public class MainActivity extends FragmentActivity {
     }
     
     Integer[] iconIds = {
-            R.drawable.ic_content_new,
-            R.drawable.ic_content_new,
+            R.drawable.ic_action_new_picture,
+            R.drawable.ic_action_new_event,
             R.drawable.ic_collections_view_as_list,
             R.drawable.ic_collections_view_as_grid,
             R.drawable.ic_collections_view_as_grid,

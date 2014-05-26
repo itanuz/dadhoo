@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.dadhoo.fragments;
+package com.dadhoo.adapters;
 
 import android.content.ContentUris;
 import android.content.Context;
@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.dadhoo.R;
 import com.dadhoo.database.DadhooDB;
+import com.dadhoo.database.pojo.Album;
 import com.dadhoo.util.ImageWorker;
 import com.dadhoo.util.Utils;
 
@@ -63,7 +64,7 @@ public class AlbumImageAdapter extends SimpleCursorAdapter {
         mCursor.moveToPosition(position);
         
         String pictureContentUriString = mCursor.getString(3);//Picture URI
-        String title = mCursor.getString(1);//Album title
+        String title =  mCursor.getString(1);//Album title
         
         if (pictureContentUriString != null) {
         	Uri pictureContentUri = ContentUris.withAppendedId(DadhooDB.Pictures.PICTURE_CONTENT_URI, Long.parseLong(pictureContentUriString));
@@ -76,5 +77,18 @@ public class AlbumImageAdapter extends SimpleCursorAdapter {
     	
         return v;
     }
+    
+    @Override
+	public Object getItem(int position) {
+		mCursor.moveToPosition(position);
+		
+		Album album = new Album();
+		album.setId(mCursor.getInt(0));
+		album.setTitle(mCursor.getString(1));
+		album.setPictureId(mCursor.getString(3));
+		album.setTimestamp(mCursor.getString(2));
+		
+		return album;//Album title
+	}
 }
 

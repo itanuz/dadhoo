@@ -73,15 +73,19 @@ public class DadhooDbHelper extends SQLiteOpenHelper {
 						                DadhooDB.Events.MODIFIED + " LONG, " +
 						                DadhooDB.Events.PICTURE_ID + " TEXT);";
         	
-        String createPicturesTable = " CREATE TABLE " + PICTURE_TABLE_NAME + " (" +
+        String createPicturesTable = "CREATE TABLE " + PICTURE_TABLE_NAME + " (" +
                 						BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 						DadhooDB.Pictures._DATA + " TEXT );";
         
-        String createGroupEventTable = " CREATE TABLE " + EVENT_TABLE_NAME + " (" +
-				BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-				"FOREIGN KEY ( " + DadhooDB.GroupEvents.EVENT_ID + ") REFERENCES " + EVENT_TABLE_NAME + " (" + BaseColumns._ID +  ")," +
-				"FOREIGN KEY ( " + DadhooDB.GroupEvents.ALBUM_ID + ") REFERENCES " + ALBUM_TABLE_NAME + " (" + BaseColumns._ID +  ");";
-        
+        String createGroupEventTable = "CREATE TABLE " + GROUP_EVENTS_TABLE_NAME + " (" +
+										BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+										DadhooDB.GroupEvents.EVENT_ID + " INTEGER, " +
+										DadhooDB.GroupEvents.ALBUM_ID + " INTEGER, " +
+										DadhooDB.GroupEvents.MODIFIED + " LONG, " +
+										"FOREIGN KEY(" + DadhooDB.GroupEvents.EVENT_ID + ") REFERENCES " + EVENT_TABLE_NAME + "(" + BaseColumns._ID +  ") ON DELETE CASCADE, " +
+										"FOREIGN KEY(" + DadhooDB.GroupEvents.ALBUM_ID + ") REFERENCES " + ALBUM_TABLE_NAME + "(" + BaseColumns._ID +  ") ON DELETE CASCADE" +
+										");";
+						        
         sqLiteDatabase.execSQL(createAlbumsTable);
         sqLiteDatabase.execSQL(createEventsTable);
         sqLiteDatabase.execSQL(createPicturesTable);

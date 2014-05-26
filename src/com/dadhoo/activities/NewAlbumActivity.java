@@ -22,6 +22,7 @@ import android.provider.MediaStore;
 import android.support.v4.app.NavUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -47,7 +48,8 @@ public class NewAlbumActivity extends Activity {
 	private ImageView mAlbumImage;
 	
 	private long album_id = -1;
-	private boolean isUpdate = false;
+	private boolean isDetailMode = false;
+	private boolean isEdit = false;
 
 	private int mImageThumbSize;
 	private int mImageThumbSpacing;
@@ -80,7 +82,6 @@ public class NewAlbumActivity extends Activity {
         // we shouldn't divide by 2, but this will use more memory and require a larger memory
         // cache.
         final int longest = (height > width ? height : width) / 2;
-
         
         // The ImageFetcher takes care of loading images into our ImageView children asynchronously
         mImageFetcher = new ImageFetcherFromFile(this, longest);
@@ -91,10 +92,24 @@ public class NewAlbumActivity extends Activity {
 		
 		if (getIntent().getExtras() != null) {
 			album_id = getIntent().getExtras().getLong("album_id");
-			isUpdate = true;
+			isDetailMode = getIntent().getExtras().getBoolean("is_update");
+			isEdit = getIntent().getExtras().getBoolean("is_edit");
 		}
 		
-		if (isUpdate) {//updqte then initialize fields.
+		if (isEdit) {
+			getActionBar().setIcon(R.drawable.ic_done);
+			getActionBar().setDisplayHomeAsUpEnabled(false);
+			getActionBar().setTitle(null);
+			getActionBar().setHomeButtonEnabled(true);
+		}
+		
+		if(!isEdit && isDetailMode) {
+			getActionBar().setDisplayHomeAsUpEnabled(true);
+			getActionBar().setTitle(null);
+			getActionBar().setHomeButtonEnabled(true);
+		}
+		
+		if (isDetailMode) {//updqte then initialize fields.
 			CursorLoader cursorLoaderAlbum = new CursorLoader(this, 
 															 DadhooDB.Albums.ALBUMS_CONTENT_URI, 
 															 null, 
@@ -105,6 +120,14 @@ public class NewAlbumActivity extends Activity {
 			
 			if(cursorAlbum.moveToFirst()){
 				 mAlbumTitleText.setText(cursorAlbum.getString(1));
+				 //Add the title only if it is in not in edit mode
+				 if (!isEdit) {
+					 getActionBar().setTitle(cursorAlbum.getString(1));
+					 mAlbumTitleText.setCursorVisible(false);
+					 mAlbumTitleText.setClickable(false);
+					 mAlbumTitleText.setFocusable(false);
+					 mAlbumTitleText.setFocusableInTouchMode(false);
+				 }
 				 String pictureContentUriString = cursorAlbum.getString(3);
 			        if (pictureContentUriString != null) {
 			        	pictureContentUri = ContentUris.withAppendedId(DadhooDB.Pictures.PICTURE_CONTENT_URI, Long.parseLong(pictureContentUriString));
@@ -113,20 +136,47 @@ public class NewAlbumActivity extends Activity {
 		}
 			
 		}
-		setupActionBar();
 	}
-
-	/**
-	 * Set up the {@link android.app.ActionBar}.
-	 */
-	private void setupActionBar() {
-		getActionBar().setTitle(R.string.new_album_actionbar_title);
+	
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		if (pictureFileUri != null) {
+			outState.putString("PICTURE_URI", pictureFileUri.toString());
+		}
+		if (pictureContentUri != null) {
+			outState.putString("PICTURE_URI", pictureContentUri.toString());
+		}
+		super.onSaveInstanceState(outState);
+	}
+	
+	
+	
+	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+		if (savedInstanceState.getString("PICTURE_URI") != null) {
+			pictureFileUri = (savedInstanceState != null) 
+					? Uri.parse(savedInstanceState.getString("PICTURE_URI")) : null;  
+			if (isDetailMode) {
+				mImageFetcher.loadImage(Uri.parse(Utils.getPicturePath(pictureFileUri, this)), mAlbumImage);
+			} else {
+				mImageFetcher.loadImage(pictureFileUri.getPath(), mAlbumImage);
+			}
+		}
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.new_album, menu);
+		if (isEdit) {
+			menu.removeItem(R.id.action_delete);
+			menu.removeItem(R.id.action_edit);
+			menu.removeItem(R.id.action_share);
+		} else {
+			menu.removeItem(R.id.action_camera);
+		}
+		
 		return true;
 	}
 
@@ -134,18 +184,20 @@ public class NewAlbumActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case android.R.id.home:
-				NavUtils.navigateUpFromSameTask(this);
-				return true;
-			case R.id.action_done:
-				if(isUpdate) {//Update an album and a picture if necessary
-					int rowAffected = updateAlbum();
-					if(rowAffected != 0) {
-						Intent intent = new Intent(this, MainActivity.class);
-						intent.putExtra("albums_list", true);
-						Toast.makeText(this, "updated", Toast.LENGTH_LONG).show();
-						startActivity(intent);
-					} else {
-						//album cannot be created
+				if(isDetailMode) {//
+					if(isEdit) {//update album
+						int rowAffected = updateAlbum();
+						if(rowAffected != 0) {
+							Intent intent = new Intent(this, MainActivity.class);
+							intent.putExtra("albums_list", true);
+							Toast.makeText(this, "updated", Toast.LENGTH_LONG).show();
+							startActivity(intent);
+						} else {
+							//album cannot be created
+						}
+					} else {//go back to MainActivity
+						NavUtils.navigateUpFromSameTask(this);
+						return true;
 					}
 				} else {//Insert
 					int affectedRows = insertAlbum();
@@ -167,6 +219,12 @@ public class NewAlbumActivity extends Activity {
 				Toast.makeText(this, "deleted", Toast.LENGTH_LONG).show();
 				startActivity(intent);
 				}
+				return true;
+			case R.id.action_edit:	
+				Intent intentEdit = getIntent();
+				intentEdit.putExtra("is_edit", true);
+			    finish();
+			    startActivity(intentEdit);
 				return true;
 			case R.id.action_camera:
 				Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -324,4 +382,34 @@ public class NewAlbumActivity extends Activity {
 	        }
 	    }
 	}
+	
+	@Override
+    public void onBackPressed() {
+    	super.onBackPressed();
+    	Intent intent = new Intent(this, MainActivity.class);
+    	intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+    	startActivity(intent);
+    }
+	
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+         //disable the back button if the activity is in UPDATE view 
+    	 if (keyCode == KeyEvent.KEYCODE_BACK) {
+    		if(!isEdit) { 
+    			return true;
+    		} else if (isDetailMode) {//if not in edit mode then go back to the same activity passing the parameter again just to be sure
+    		 Intent intentEdit = getIntent();
+    		 intentEdit.putExtra("is_edit", false);
+    		 intentEdit.putExtra("is_update", true);
+    		 intentEdit.putExtra("album_id", album_id);
+    		 finish();
+    		 startActivity(intentEdit);
+    		} else {
+    			onBackPressed();
+    		}
+    	 }
+         //preventing default implementation previous to android.os.Build.VERSION_CODES.ECLAIR
+         return super.onKeyDown(keyCode, event);    
+    }
+
 }
