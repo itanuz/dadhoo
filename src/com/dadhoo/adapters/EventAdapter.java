@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.dadhoo.fragments;
+package com.dadhoo.adapters;
 
 import android.app.Activity;
 import android.content.ContentUris;
@@ -81,5 +81,11 @@ public class EventAdapter extends SimpleCursorAdapter {
 		}
 		name.setText(note);
 		return v;
+	}
+	
+	@Override
+	public Object getItem(int position) {
+		mCursor.moveToPosition(position);
+		return super.getItem(position);
 	}
 }

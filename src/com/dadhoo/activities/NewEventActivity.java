@@ -37,7 +37,6 @@ import android.widget.Toast;
 import com.dadhoo.R;
 import com.dadhoo.database.DadhooDB;
 import com.dadhoo.database.DadhooDB.Albums;
-import com.dadhoo.database.DadhooDB.Events;
 import com.dadhoo.database.DadhooDB.GroupEvents;
 import com.dadhoo.fragments.AlbumListDialogFragment;
 import com.dadhoo.fragments.AlbumListDialogFragment.NoticeDialogListener;
@@ -77,10 +76,15 @@ public class NewEventActivity extends FragmentActivity implements NoticeDialogLi
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.new_event);
 		
+		//hide the keyboard 
 		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 		
 		mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
         mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
+        
+        getActionBar().setIcon(R.drawable.ic_done);
+		getActionBar().setTitle(null);
+		getActionBar().setHomeButtonEnabled(true);
 
         // Fetch screen height and width, to use as our max size when loading images as this
         // activity runs full screen
@@ -148,17 +152,24 @@ public class NewEventActivity extends FragmentActivity implements NoticeDialogLi
 					listOfAlbum.show(getSupportFragmentManager(), "ALBUM_LIST_DIALOG");
 				}
 		});
-		
-		setupActionBar();
 	}
 
-	/**
-	 * Set up the {@link android.app.ActionBar}.
-	 */
-	private void setupActionBar() {
-		getActionBar().setTitle(R.string.new_album_actionbar_title);
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		if (pictureFileUri != null) {
+			outState.putString("PICTURE_URI", pictureFileUri.toString());
+		}
+		super.onSaveInstanceState(outState);
+	}
+	
+	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+		pictureFileUri = savedInstanceState != null ? Uri.parse(savedInstanceState.getString("PICTURE_URI")) : null;  
+		mImageFetcher.loadImage(pictureFileUri.getPath(), mEventImage);
 	}
 
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -170,9 +181,6 @@ public class NewEventActivity extends FragmentActivity implements NoticeDialogLi
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case android.R.id.home:
-				NavUtils.navigateUpFromSameTask(this);
-				return true;
-			case R.id.action_done:
 				if(isUpdate) {//Update an album and a picture if necessary
 					int rowAffected = updateEvent();
 					if(rowAffected != 0) {
@@ -418,4 +426,12 @@ public class NewEventActivity extends FragmentActivity implements NoticeDialogLi
 		// TODO Auto-generated method stub
 		
 	}
+	
+	@Override
+    public void onBackPressed() {
+		super.onBackPressed();
+    	Intent intent = new Intent(this, MainActivity.class);
+    	intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    	startActivity(intent);
+    }
 }

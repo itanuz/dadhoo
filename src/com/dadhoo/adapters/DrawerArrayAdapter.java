@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.dadhoo.fragments;
+package com.dadhoo.adapters;
 
 import android.app.Activity;
 import android.util.Log;
