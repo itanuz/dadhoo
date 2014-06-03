@@ -118,8 +118,9 @@ public class AlbumListFragment extends Fragment {
 	            	if (useFragment) { //multi-pane
 	            		//update the fragment contained in the getActivity()
 	            	} else {//one-pane call the activity
-	            		Intent intent = new Intent(getActivity(), NewAlbumActivity.class);
-		     			startActivity(intent);
+	            		Intent intentNewAlbum = new Intent(getActivity(), NewAlbumActivity.class);
+	            		intentNewAlbum.putExtra("is_edit", true);
+		     			startActivity(intentNewAlbum);
 	            	}
 	            }
 	        });
