@@ -168,13 +168,13 @@ public class NewAlbumActivity extends Activity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.new_album, menu);
+		getMenuInflater().inflate(R.menu.crud_album_menu, menu);
 		if (isEdit) {
-			menu.removeItem(R.id.action_delete);
-			menu.removeItem(R.id.action_edit);
-			menu.removeItem(R.id.action_share);
+			menu.removeItem(R.id.album_action_delete);
+			menu.removeItem(R.id.album_action_edit);
+			menu.removeItem(R.id.album_action_share);
 		} else {
-			menu.removeItem(R.id.action_camera);
+			menu.removeItem(R.id.album_action_camera);
 		}
 		
 		return true;
@@ -210,8 +210,11 @@ public class NewAlbumActivity extends Activity {
 						//album cannot be created
 					}
 				}
+				if(pictureFileUri != null) {
+					addPictureToGallery();
+				}
 				return true;
-			case R.id.action_delete:
+			case R.id.album_action_delete:
 				int rowAffected = deleteAlbum();
 				if(rowAffected != 0) { 
 					Intent intent = new Intent(this, MainActivity.class);
@@ -220,13 +223,13 @@ public class NewAlbumActivity extends Activity {
 				startActivity(intent);
 				}
 				return true;
-			case R.id.action_edit:	
+			case R.id.album_action_edit:	
 				Intent intentEdit = getIntent();
 				intentEdit.putExtra("is_edit", true);
 			    finish();
 			    startActivity(intentEdit);
 				return true;
-			case R.id.action_camera:
+			case R.id.album_action_camera:
 				Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 				pictureFileUri = getOutputMediaFileUri(MEDIA_TYPE_IMAGE);
 				intent.putExtra(MediaStore.EXTRA_OUTPUT, pictureFileUri);
@@ -340,14 +343,14 @@ public class NewAlbumActivity extends Activity {
 		// To be safe, you should check that the SDCard is mounted
 	    // using Environment.getExternalStorageState() before doing this.
 
-	    File mediaStorageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);//nvironment.DIRECTORY_PICTURES), "com.dadhoo.app");
-	    //File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "DADHOO");
+//	    File mediaStorageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);//nvironment.DIRECTORY_PICTURES), "com.dadhoo.app");
+	    File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "DADHOO");
 	    // This location works best if you want the created images to be shared
 	    // between applications and persist after your app has been uninstalled.
 
 	    // Create the storage directory if it does not exist
-	    if (! mediaStorageDir.exists()) {
-	        if (! mediaStorageDir.mkdirs()) {
+	    if (!mediaStorageDir.exists()) {
+	        if (!mediaStorageDir.mkdirs()) {
 	            Log.d("Dadhoo", "failed to create directory");
 	            return null;
 	        }
@@ -368,6 +371,9 @@ public class NewAlbumActivity extends Activity {
 	    return Uri.fromFile(mediaFile);
 	}
 	
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onActivityResult(int, int, android.content.Intent)
+	 */
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
@@ -383,6 +389,17 @@ public class NewAlbumActivity extends Activity {
 	    }
 	}
 	
+	/**
+	 * Add the picture saved to the gallery invoking the media scanner
+	 */
+	private void addPictureToGallery() {
+	    Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+	    File f = new File(pictureFileUri.getPath());
+	    Uri contentUri = Uri.fromFile(f);
+	    mediaScanIntent.setData(contentUri);
+	    this.sendBroadcast(mediaScanIntent);
+	}
+
 	@Override
     public void onBackPressed() {
     	super.onBackPressed();
@@ -411,5 +428,4 @@ public class NewAlbumActivity extends Activity {
          //preventing default implementation previous to android.os.Build.VERSION_CODES.ECLAIR
          return super.onKeyDown(keyCode, event);    
     }
-
 }

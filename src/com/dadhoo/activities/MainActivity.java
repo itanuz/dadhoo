@@ -126,6 +126,7 @@ public class MainActivity extends FragmentActivity {
              switch (position) {
 	     		case 0://new event
 	     			Intent intentEvent = new Intent(getBaseContext(), NewEventActivity.class);
+	     			intentEvent.putExtra("is_edit", true);
 	     			startActivity(intentEvent);
 	     			break;
 	     		case 1://new album

@@ -1,0 +1,39 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <group>
+        <item 
+        android:id="@+id/album_action_camera"
+        android:title="Add a picture"
+        android:icon="@drawable/ic_device_access_camera"
+        android:showAsAction="always"
+        />
+        
+        <item 
+        android:id="@+id/album_action_edit"
+        android:title="Edit"
+        android:icon="@drawable/ic_action_edit"
+        android:showAsAction="always"
+        />
+        
+        <item 
+        android:id="@+id/album_action_share"
+        android:title="Share with other applications"
+        android:icon="@drawable/ic_action_share"
+        android:showAsAction="always"
+        />
+        
+        
+	    <item
+	        android:id="@+id/album_action_delete"
+	        android:title="delete album"
+	        android:icon="@drawable/content_discard"
+	        android:showAsAction="ifRoom"
+	        android:orderInCategory="2"/>
+        
+    </group>
+    
+    <item
+        android:id="@+id/album_action_settings"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/action_settings"/>
+</menu>

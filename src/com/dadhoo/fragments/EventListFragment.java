@@ -156,14 +156,14 @@ public class EventListFragment extends Fragment {
 	            	} else {//one-pane call the activity
 		            	Intent intent = new Intent(getActivity(), NewEventActivity.class);
 		            	intent.putExtra("event_id", id);
+		            	intent.putExtra("is_update", true);
+		            	intent.putExtra("is_edit", false);
 		            	intent.putExtra("album_id", album_id);
 		            	startActivity(intent);
 	            	}
 				}
 	        });
 		} else {//there are not event yet. Show an icon to easily create one
-			
-			System.out.println("NO events yet");
 			gridView.setAdapter(new ImageAdapterNewEvent(this.getActivity()));
 			gridView.setOnItemClickListener(new OnItemClickListener() {
 	        	public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
@@ -171,9 +171,10 @@ public class EventListFragment extends Fragment {
 	            	if (useFragment) { //multi-pane
 	            		//update the fragment contained in the getActivity()
 	            	} else {//one-pane call the activity
-	            		Intent intent = new Intent(getActivity(), NewEventActivity.class);
-	            		intent.putExtra("album_id", album_id);
-		     			startActivity(intent);
+	            		Intent intentNewEvent = new Intent(getActivity(), NewEventActivity.class);
+	            		intentNewEvent.putExtra("is_edit", true);
+	            		intentNewEvent.putExtra("album_id", album_id);
+		     			startActivity(intentNewEvent);
 	            	}
 	            }
 	        });

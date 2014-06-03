@@ -83,7 +83,7 @@ public class AlbumListFragment extends Fragment {
 		            	intent.putExtra("album_title", album.getTitle());
 		            	intent.putExtra("album_picture_id", album.getPictureId());
 		            	intent.putExtra("album_timestamp", album.getTimestamp());
-		            	intent.putExtra("is_update", true);
+		            	intent.putExtra("is_edit", true);
 		            	startActivity(intent);
 	            	}
 	            }
@@ -127,7 +127,6 @@ public class AlbumListFragment extends Fragment {
 		}
 
         return gridView;
-    
 	}
 }
 
