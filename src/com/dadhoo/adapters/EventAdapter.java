@@ -3,7 +3,6 @@
  */
 package com.dadhoo.adapters;
 
-import android.app.Activity;
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
