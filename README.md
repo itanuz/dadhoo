@@ -1,20 +1,17 @@
 dadhoo
 ======
 
-Yet another photo application. This is my first application to learn how to develop in android 
-
-The project is supposed to run under the android sdk based on eclipse.
+The project has been developed using the android sdk based on eclipse.
 
 The application is divided in two main part Albums and Events. Each album is a container of zero or more events and each event can below to zero or more album.
+An event is a generic term to identify a media file: picture, video, vocal record. At the moment only picture are supported.
+An album is identified by a title and a picture and represents a container of events.
+An event represent a picture with a comment and a date.
 
-An album is identified by a title and a picture.
+When created an event can be linked to one or more albums. 
 
-At the moment only the album part has been developed providing these features:
-1. create an album with a title and or a picture
-2. store the picture in the phone
-3. delete or update the album
-
-Future improvements are the implementation of the Event management section and providing cloud storage and sharing
+The application use SQLite to store locally data. No picture are stored into the database. The database contains only the reference to the physical picture file. 
+Picture are stored into the phone gallery.  
 
 License
 =======
