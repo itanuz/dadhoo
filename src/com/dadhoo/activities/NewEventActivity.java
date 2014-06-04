@@ -178,15 +178,43 @@ public class NewEventActivity extends FragmentActivity implements NoticeDialogLi
 		if (pictureFileUri != null) {
 			outState.putString("PICTURE_URI", pictureFileUri.toString());
 		}
+		if (pictureContentUri != null) {
+			outState.putString("PICTURE_URI", pictureContentUri.toString());
+		}
 		super.onSaveInstanceState(outState);
 	}
+	
+	
 	
 	@Override
 	protected void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
-		pictureFileUri = savedInstanceState != null ? Uri.parse(savedInstanceState.getString("PICTURE_URI")) : null;  
-		mImageFetcher.loadImage(pictureFileUri.getPath(), mEventImage);
+		if (savedInstanceState.getString("PICTURE_URI") != null) {
+			pictureFileUri = (savedInstanceState != null) 
+					? Uri.parse(savedInstanceState.getString("PICTURE_URI")) : null;  
+			if (isDetailMode) {
+				mImageFetcher.loadImage(Uri.parse(Utils.getPicturePath(pictureFileUri, this)), mEventImage);
+			} else {
+				mImageFetcher.loadImage(pictureFileUri.getPath(), mEventImage);
+			}
+		}
 	}
+
+	
+//	@Override
+//	protected void onSaveInstanceState(Bundle outState) {
+//		if (pictureFileUri != null) {
+//			outState.putString("PICTURE_URI", pictureFileUri.toString());
+//		}
+//		super.onSaveInstanceState(outState);
+//	}
+//	
+//	@Override
+//	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+//		super.onRestoreInstanceState(savedInstanceState);
+//		pictureFileUri = savedInstanceState != null ? Uri.parse(savedInstanceState.getString("PICTURE_URI")) : null;  
+//		mImageFetcher.loadImage(pictureFileUri.getPath(), mEventImage);
+//	}
 
 	
 	@Override
