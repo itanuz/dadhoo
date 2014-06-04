@@ -25,6 +25,8 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -132,10 +134,22 @@ public class NewAlbumActivity extends Activity {
 			        if (pictureContentUriString != null) {
 			        	pictureContentUri = ContentUris.withAppendedId(DadhooDB.Pictures.PICTURE_CONTENT_URI, Long.parseLong(pictureContentUriString));
 			        	mImageFetcher.loadImage(Uri.parse(Utils.getPicturePath(pictureContentUri, this)), mAlbumImage);
+			        }
 			}
 		}
-			
-		}
+		
+		if((!isDetailMode && isEdit) || (isDetailMode && isEdit) ) {
+			mAlbumImage.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+					pictureFileUri = getOutputMediaFileUri(MEDIA_TYPE_IMAGE);
+					intent.putExtra(MediaStore.EXTRA_OUTPUT, pictureFileUri);
+					startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
+				}
+			});
+		} 
+	
 	}
 	
 	@Override
