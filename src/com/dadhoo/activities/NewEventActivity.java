@@ -61,7 +61,7 @@ public class NewEventActivity extends FragmentActivity implements NoticeDialogLi
 	private long event_id = -1;
 	private long album_id = -1;
 	private boolean isDetailMode = false;
-	private boolean isEdit = false;
+	private boolean isNew = false;
 
 	private int mImageThumbSize;
 	private int mImageThumbSpacing;
@@ -97,17 +97,17 @@ public class NewEventActivity extends FragmentActivity implements NoticeDialogLi
 			album_timestamp  = getIntent().getExtras().getString("album_timestamp");
 			
 			isDetailMode = getIntent().getExtras().getBoolean("is_update");
-			isEdit = getIntent().getExtras().getBoolean("is_edit");
+			isNew = getIntent().getExtras().getBoolean("is_edit");
 		}
 		
-		if (isEdit) {
+		if (isNew) {
 			getActionBar().setIcon(R.drawable.ic_done);
 			getActionBar().setDisplayHomeAsUpEnabled(false);
 			getActionBar().setTitle(null);
 			getActionBar().setHomeButtonEnabled(true);
 		}
 		
-		if(!isEdit && isDetailMode) {
+		if(!isNew && isDetailMode) {
 			getActionBar().setDisplayHomeAsUpEnabled(true);
 			getActionBar().setTitle(null);
 			getActionBar().setHomeButtonEnabled(true);
@@ -146,7 +146,7 @@ public class NewEventActivity extends FragmentActivity implements NoticeDialogLi
 			
 			if(cursorEvent.moveToFirst()){
 				mEventNoteText.setText(cursorEvent.getString(2));
-				if (!isEdit) {
+				if (!isNew) {
 //					 getActionBar().setTitle(cursorAlbum.getString(1));
 					mEventNoteText.setCursorVisible(false);
 					mEventNoteText.setClickable(false);
@@ -160,8 +160,18 @@ public class NewEventActivity extends FragmentActivity implements NoticeDialogLi
 				}
 			}
 			cursorEvent.close();
-		}
-		
+		} 
+		if((!isDetailMode && isNew) || (isDetailMode && isNew) ) {
+			mEventImage.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+					pictureFileUri = getOutputMediaFileUri(MEDIA_TYPE_IMAGE);
+					intent.putExtra(MediaStore.EXTRA_OUTPUT, pictureFileUri);
+					startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
+				}
+			});
+		} 
 		//Add the button to show the dialog in order to choose one or more album
 		Button addAlbumsButton = (Button) findViewById(R.id.button1);
 		addAlbumsButton.setOnClickListener(new OnClickListener() {
@@ -214,7 +224,7 @@ public class NewEventActivity extends FragmentActivity implements NoticeDialogLi
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.crud_events_menu, menu);
-		if (isEdit) {
+		if (isNew) {
 			menu.removeItem(R.id.event_action_delete);
 			menu.removeItem(R.id.event_action_edit);
 			menu.removeItem(R.id.event_action_share);
@@ -230,13 +240,22 @@ public class NewEventActivity extends FragmentActivity implements NoticeDialogLi
 		switch (item.getItemId()) {
 			case android.R.id.home:
 				if(isDetailMode) {//Update an album and a picture if necessary
-					if(isEdit) {
+					if(isNew) {
 						int rowAffected = updateEvent();
 						if(rowAffected != 0) {
-							Intent intent = new Intent(this, MainActivity.class);
-							intent.putExtra("event_list", true);
-							Toast.makeText(this, "updated", Toast.LENGTH_LONG).show();
-							startActivity(intent);
+							if(album_id != 0) {//go back to the event list for this album
+								Intent intent = new Intent(this, EventsListActivity.class);
+				            	intent.putExtra("album_id", album_id);
+				            	intent.putExtra("album_title", album_title);
+				            	intent.putExtra("album_picture_id", album_picture_id);
+				            	intent.putExtra("album_timestamp", album_timestamp);
+				            	intent.putExtra("is_edit", true);
+				            	startActivity(intent);  
+							} else {//go to the event list
+								Intent intent = new Intent(this, EventsListActivity.class);
+								Toast.makeText(this, "Event created", Toast.LENGTH_LONG).show();
+								startActivity(intent);
+							}
 						} else {
 							Log.d(TAG, "album cannot be created");
 						}
@@ -535,7 +554,7 @@ public class NewEventActivity extends FragmentActivity implements NoticeDialogLi
     public boolean onKeyDown(int keyCode, KeyEvent event) {
          //disable the back button if the activity is in UPDATE view 
     	 if (keyCode == KeyEvent.KEYCODE_BACK) {
-    		if(!isEdit) { 
+    		if(!isNew) { 
     			return true;
     		} else if (isDetailMode) {//if not in edit mode then go back to the same activity passing the parameter again just to be sure
     		 Intent intentEdit = getIntent();

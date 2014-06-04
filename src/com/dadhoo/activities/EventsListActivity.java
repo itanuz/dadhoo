@@ -37,7 +37,7 @@ public class EventsListActivity extends FragmentActivity implements NoticeEventL
 
 		FragmentManager fragmentMgr = getSupportFragmentManager();
 		FragmentTransaction fragmentTx = fragmentMgr.beginTransaction();
-		if (null != album_id  && null == fragmentMgr.findFragmentByTag("FRAG_EVENTS_HEADER")) {
+		if (null != album_id && album_id != 0 && null == fragmentMgr.findFragmentByTag("FRAG_EVENTS_HEADER")) {
 			fragmentTx.add(R.id.event_list_header, 
 					EventListHeaderFragment.newInstance(album_id, album_title, album_picture_id, album_timestamp), 
 					"FRAG_EVENTS_HEADER");

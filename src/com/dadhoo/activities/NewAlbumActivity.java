@@ -25,6 +25,8 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -132,10 +134,22 @@ public class NewAlbumActivity extends Activity {
 			        if (pictureContentUriString != null) {
 			        	pictureContentUri = ContentUris.withAppendedId(DadhooDB.Pictures.PICTURE_CONTENT_URI, Long.parseLong(pictureContentUriString));
 			        	mImageFetcher.loadImage(Uri.parse(Utils.getPicturePath(pictureContentUri, this)), mAlbumImage);
+			        }
 			}
 		}
-			
-		}
+		
+		if((!isDetailMode && isEdit) || (isDetailMode && isEdit) ) {
+			mAlbumImage.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+					pictureFileUri = getOutputMediaFileUri(MEDIA_TYPE_IMAGE);
+					intent.putExtra(MediaStore.EXTRA_OUTPUT, pictureFileUri);
+					startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
+				}
+			});
+		} 
+	
 	}
 	
 	@Override
@@ -273,22 +287,39 @@ public class NewAlbumActivity extends Activity {
 	private int updateAlbum() {
 		int affected = 0;
 		ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
-		ops.add(ContentProviderOperation.newUpdate(DadhooDB.Albums.ALBUMS_CONTENT_URI)
-				.withSelection(BaseColumns._ID + " = ?", new String[] {Long.toString(album_id)})
-				.withValue(DadhooDB.Albums.TITLE, mAlbumTitleText.getText().toString())
-				.withValue(DadhooDB.Albums.TIMESTAMP, new Date().getTime())
-				.build());
-		if (pictureFileUri != null) {
-			ops.add(ContentProviderOperation.newUpdate(DadhooDB.Pictures.PICTURE_CONTENT_URI)
-					.withSelection(BaseColumns._ID + " = ?", new String[] {pictureContentUri.getLastPathSegment()})
+		if(pictureContentUri == null && pictureFileUri != null) {
+			ops.add(ContentProviderOperation.newInsert(DadhooDB.Pictures.PICTURE_CONTENT_URI)
 					.withValue(DadhooDB.Pictures._DATA, pictureFileUri.getPath())
 					.build());
+			ops.add(ContentProviderOperation.newUpdate(DadhooDB.Albums.ALBUMS_CONTENT_URI)
+					.withSelection(BaseColumns._ID + " = ?", new String[] {Long.toString(album_id)})
+					.withValue(DadhooDB.Albums.TITLE, mAlbumTitleText.getText().toString())
+					.withValue(DadhooDB.Albums.TIMESTAMP, new Date().getTime())
+					.withValueBackReference(DadhooDB.Albums.PICTURE_ID, 0)
+					.build());
+		} else {
+			ops.add(ContentProviderOperation.newUpdate(DadhooDB.Albums.ALBUMS_CONTENT_URI)
+					.withSelection(BaseColumns._ID + " = ?", new String[] {Long.toString(album_id)})
+					.withValue(DadhooDB.Albums.TITLE, mAlbumTitleText.getText().toString())
+					.withValue(DadhooDB.Albums.TIMESTAMP, new Date().getTime())
+					.build());
+			if (pictureFileUri != null) {
+				ops.add(ContentProviderOperation.newUpdate(DadhooDB.Pictures.PICTURE_CONTENT_URI)
+						.withSelection(BaseColumns._ID + " = ?", new String[] {pictureContentUri.getLastPathSegment()})
+						.withValue(DadhooDB.Pictures._DATA, pictureFileUri.getPath())
+						.build());
+			}
 		}
+		
 
 		try {
 			ContentProviderResult[] applyBatch = getContentResolver().applyBatch(DadhooDB.AUTHORITY, ops);
 			for(ContentProviderResult cpr : applyBatch) {
-				affected += cpr.count;
+				if(cpr.count != null) {
+					affected += cpr.count;
+				} else {
+					affected++;
+				}
 			}
 		} catch (RemoteException e) {
 			e.printStackTrace();
