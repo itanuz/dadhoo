@@ -72,6 +72,10 @@ public class NewEventActivity extends FragmentActivity implements NoticeDialogLi
 	private ArrayList<Integer> mSelectedItems;
 
 	private Cursor mCursorGroupEvent;
+
+	private String album_title;
+	private String album_picture_id;
+	private String album_timestamp;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -86,7 +90,12 @@ public class NewEventActivity extends FragmentActivity implements NoticeDialogLi
         
         if (getIntent().getExtras() != null) {
 			event_id = getIntent().getExtras().getLong("event_id");
+			
 			album_id = getIntent().getExtras().getLong("album_id");
+			album_title = getIntent().getExtras().getString("album_title");
+			album_picture_id  = getIntent().getExtras().getString("album_picture_id");
+			album_timestamp  = getIntent().getExtras().getString("album_timestamp");
+			
 			isDetailMode = getIntent().getExtras().getBoolean("is_update");
 			isEdit = getIntent().getExtras().getBoolean("is_edit");
 		}
@@ -167,7 +176,9 @@ public class NewEventActivity extends FragmentActivity implements NoticeDialogLi
 																		 null);
 						mCursorGroupEvent = cursorLoaderGroupEvent.loadInBackground();
 					}
-					DialogFragment listOfAlbum = AlbumListDialogFragment.newInstance(mCursorGroupEvent);
+					//If the event is created from an album select the album id otherwise use the cursor
+					DialogFragment listOfAlbum = album_id != 0 ? AlbumListDialogFragment.newInstance(album_id) : AlbumListDialogFragment.newInstance(mCursorGroupEvent);
+					
 					listOfAlbum.show(getSupportFragmentManager(), "ALBUM_LIST_DIALOG");
 				}
 		});
@@ -199,23 +210,6 @@ public class NewEventActivity extends FragmentActivity implements NoticeDialogLi
 			}
 		}
 	}
-
-	
-//	@Override
-//	protected void onSaveInstanceState(Bundle outState) {
-//		if (pictureFileUri != null) {
-//			outState.putString("PICTURE_URI", pictureFileUri.toString());
-//		}
-//		super.onSaveInstanceState(outState);
-//	}
-//	
-//	@Override
-//	protected void onRestoreInstanceState(Bundle savedInstanceState) {
-//		super.onRestoreInstanceState(savedInstanceState);
-//		pictureFileUri = savedInstanceState != null ? Uri.parse(savedInstanceState.getString("PICTURE_URI")) : null;  
-//		mImageFetcher.loadImage(pictureFileUri.getPath(), mEventImage);
-//	}
-
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -251,12 +245,26 @@ public class NewEventActivity extends FragmentActivity implements NoticeDialogLi
 						return true;
 					}	
 				} else {//Insert
+					//in case a new event is created from an album create the event and the relationship with the album
+					if(!isDetailMode && mSelectedItems == null && album_id != 0) {
+						mSelectedItems = new ArrayList<Integer>();
+						mSelectedItems.add((int) album_id);  
+					}
 					int affectedRows = insertEvent();
 					if(affectedRows > 0) {
-						Intent intent = new Intent(this, EventsListActivity.class);
-//						intent.putExtra("event_list", true);
-						Toast.makeText(this, "Event created", Toast.LENGTH_LONG).show();
-						startActivity(intent);
+						if(album_id != 0) {//go back to the event list for this album
+							Intent intent = new Intent(this, EventsListActivity.class);
+			            	intent.putExtra("album_id", album_id);
+			            	intent.putExtra("album_title", album_title);
+			            	intent.putExtra("album_picture_id", album_picture_id);
+			            	intent.putExtra("album_timestamp", album_timestamp);
+			            	intent.putExtra("is_edit", true);
+			            	startActivity(intent);  
+						} else {//go to the event list
+							Intent intent = new Intent(this, EventsListActivity.class);
+							Toast.makeText(this, "Event created", Toast.LENGTH_LONG).show();
+							startActivity(intent);
+						}
 					} else {
 						Log.d(TAG, "album cannot be created");
 					}
@@ -273,11 +281,20 @@ public class NewEventActivity extends FragmentActivity implements NoticeDialogLi
 				return true;	
 			case R.id.event_action_delete:
 				int rowAffected = deleteEvent();
-				if(rowAffected != 0) { 
-					Intent intent = new Intent(this, MainActivity.class);
-					intent.putExtra("albums_list", true);
-					Toast.makeText(this, "deleted", Toast.LENGTH_LONG).show();
-					startActivity(intent);
+				if(rowAffected > 0) {
+					if(album_id != 0) {//go back to the event list for this album
+						Intent intent = new Intent(this, EventsListActivity.class);
+		            	intent.putExtra("album_id", album_id);
+		            	intent.putExtra("album_title", album_title);
+		            	intent.putExtra("album_picture_id", album_picture_id);
+		            	intent.putExtra("album_timestamp", album_timestamp);
+		            	intent.putExtra("is_edit", true);
+		            	startActivity(intent);  
+					} else {//go to the event list
+						Intent intent = new Intent(this, EventsListActivity.class);
+						Toast.makeText(this, "Event deleted", Toast.LENGTH_LONG).show();
+						startActivity(intent);
+					}
 				}
 				return true;
 			case R.id.event_action_camera:

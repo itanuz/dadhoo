@@ -36,12 +36,10 @@ public class EventListHeaderFragment extends Fragment {
 	
 	private int mImageThumbSize;
 	private ImageFetcherFromFile mImageFetcher;
-	private ImageWorker mWorker;
 
 	private Long album_id;
 	private String album_title;
 	private String album_picture_id;
-
 	private String album_timestamp;
 	
 	public static Fragment newInstance(Long album_id, String album_title, String album_picture_id, String timestamp) {

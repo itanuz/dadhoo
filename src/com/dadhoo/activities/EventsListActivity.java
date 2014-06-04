@@ -1,6 +1,7 @@
 package com.dadhoo.activities;
 
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -34,10 +35,6 @@ public class EventsListActivity extends FragmentActivity implements NoticeEventL
 
 		setContentView(R.layout.frag_container_events_list_view);
 
-//		if (savedInstanceState != null) {
-//            return;
-//        }
-		
 		FragmentManager fragmentMgr = getSupportFragmentManager();
 		FragmentTransaction fragmentTx = fragmentMgr.beginTransaction();
 		if (null != album_id  && null == fragmentMgr.findFragmentByTag("FRAG_EVENTS_HEADER")) {
@@ -47,7 +44,10 @@ public class EventsListActivity extends FragmentActivity implements NoticeEventL
 		}
 		
 		if (null == fragmentMgr.findFragmentByTag("FRAG_EVENTS_FILTERED_BY_ALBUM_ID")) {
-			fragmentTx.add(R.id.event_list_content, null != album_id ? EventListFragment.newInstance(album_id) : new EventListFragment(), 
+			fragmentTx.add(R.id.event_list_content, null != album_id ? EventListFragment.newInstance(album_id,
+																									 album_title,
+																									 album_picture_id,
+																									 album_timestamp) : new EventListFragment(), 
 					"FRAG_EVENTS_FILTERED_BY_ALBUM_ID");
 		}
 		fragmentTx.commit();
@@ -70,6 +70,14 @@ public class EventsListActivity extends FragmentActivity implements NoticeEventL
 		case android.R.id.home:
 			NavUtils.navigateUpFromSameTask(this);
 			return true;
+		case R.id.add_event:
+			Intent intentNewEvent = new Intent(this, NewEventActivity.class);
+    		intentNewEvent.putExtra("is_edit", true);
+    		intentNewEvent.putExtra("album_id", album_id);
+    		intentNewEvent.putExtra("album_title", album_title);	
+    		intentNewEvent.putExtra("album_picture_id", album_picture_id);
+    		intentNewEvent.putExtra("album_timestamp", album_timestamp); 
+    		startActivity(intentNewEvent);
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -100,6 +108,13 @@ public class EventsListActivity extends FragmentActivity implements NoticeEventL
 			fragmentTx.show(headerFragment);
 			fragmentTx.commit();
 		}
-		
 	}
+	
+	@Override
+    public void onBackPressed() {
+    	super.onBackPressed();
+    	Intent intent = new Intent(this, MainActivity.class);
+    	intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+    	startActivity(intent);
+    }
  }
