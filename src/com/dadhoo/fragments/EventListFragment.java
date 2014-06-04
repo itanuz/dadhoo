@@ -46,6 +46,9 @@ public class EventListFragment extends Fragment {
 	private ImageFetcherFromFile mImageFetcher;
 
 	private Long album_id;
+	private String album_title;
+	private String album_picture_id;
+	private String album_timestamp;
 
 	private int myLastVisiblePos;
 	
@@ -76,11 +79,14 @@ public class EventListFragment extends Fragment {
 	   }
 
 	
-	public static Fragment newInstance(Long album_id) {
+	public static Fragment newInstance(Long album_id, String album_title, String album_picture_id, String timestamp) {
 		Log.d(TAG, "New Instance");
 		EventListFragment fragment = new EventListFragment();
 		Bundle fragmentArgs = new Bundle();
 		fragmentArgs.putLong("ALBUM_ID", album_id);
+		fragmentArgs.putString("ALBUM_TITLE", album_title);
+		fragmentArgs.putString("ALBUM_PICTURE_ID", album_picture_id);
+		fragmentArgs.putString("ALBUM_TIMESTAMP", timestamp);
 		fragment.setArguments(fragmentArgs); 
 		return fragment;
 	}
@@ -89,6 +95,9 @@ public class EventListFragment extends Fragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		album_id = getArguments() != null ? getArguments().getLong("ALBUM_ID") : null;	
+		album_title = getArguments() != null ? getArguments().getString("ALBUM_TITLE") : null;
+		album_picture_id = getArguments() != null ? getArguments().getString("ALBUM_PICTURE_ID") : null;
+		album_timestamp = getArguments() != null ? getArguments().getString("ALBUM_TIMESTAMP") : null;
 	}
 	
     @Override
@@ -156,14 +165,18 @@ public class EventListFragment extends Fragment {
 	            	} else {//one-pane call the activity
 		            	Intent intent = new Intent(getActivity(), NewEventActivity.class);
 		            	intent.putExtra("event_id", id);
+		            	intent.putExtra("is_update", true);
+		            	intent.putExtra("is_edit", false);
 		            	intent.putExtra("album_id", album_id);
+		            	intent.putExtra("album_id", album_id);
+	            		intent.putExtra("album_title", album_title);	
+	            		intent.putExtra("album_picture_id", album_picture_id);
+	            		intent.putExtra("album_timestamp", album_timestamp);
 		            	startActivity(intent);
 	            	}
 				}
 	        });
 		} else {//there are not event yet. Show an icon to easily create one
-			
-			System.out.println("NO events yet");
 			gridView.setAdapter(new ImageAdapterNewEvent(this.getActivity()));
 			gridView.setOnItemClickListener(new OnItemClickListener() {
 	        	public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
@@ -171,9 +184,13 @@ public class EventListFragment extends Fragment {
 	            	if (useFragment) { //multi-pane
 	            		//update the fragment contained in the getActivity()
 	            	} else {//one-pane call the activity
-	            		Intent intent = new Intent(getActivity(), NewEventActivity.class);
-	            		intent.putExtra("album_id", album_id);
-		     			startActivity(intent);
+	            		Intent intentNewEvent = new Intent(getActivity(), NewEventActivity.class);
+	            		intentNewEvent.putExtra("is_edit", true);
+	            		intentNewEvent.putExtra("album_id", album_id);
+	            		intentNewEvent.putExtra("album_title", album_title);	
+	            		intentNewEvent.putExtra("album_picture_id", album_picture_id);
+	            		intentNewEvent.putExtra("album_timestamp", album_timestamp); 
+		     			startActivity(intentNewEvent);
 	            	}
 	            }
 	        });

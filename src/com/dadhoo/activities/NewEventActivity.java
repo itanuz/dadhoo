@@ -24,6 +24,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -59,7 +60,8 @@ public class NewEventActivity extends FragmentActivity implements NoticeDialogLi
 	
 	private long event_id = -1;
 	private long album_id = -1;
-	private boolean isUpdate = false;
+	private boolean isDetailMode = false;
+	private boolean isEdit = false;
 
 	private int mImageThumbSize;
 	private int mImageThumbSpacing;
@@ -70,6 +72,10 @@ public class NewEventActivity extends FragmentActivity implements NoticeDialogLi
 	private ArrayList<Integer> mSelectedItems;
 
 	private Cursor mCursorGroupEvent;
+
+	private String album_title;
+	private String album_picture_id;
+	private String album_timestamp;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -82,9 +88,30 @@ public class NewEventActivity extends FragmentActivity implements NoticeDialogLi
 		mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
         mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
         
-        getActionBar().setIcon(R.drawable.ic_done);
-		getActionBar().setTitle(null);
-		getActionBar().setHomeButtonEnabled(true);
+        if (getIntent().getExtras() != null) {
+			event_id = getIntent().getExtras().getLong("event_id");
+			
+			album_id = getIntent().getExtras().getLong("album_id");
+			album_title = getIntent().getExtras().getString("album_title");
+			album_picture_id  = getIntent().getExtras().getString("album_picture_id");
+			album_timestamp  = getIntent().getExtras().getString("album_timestamp");
+			
+			isDetailMode = getIntent().getExtras().getBoolean("is_update");
+			isEdit = getIntent().getExtras().getBoolean("is_edit");
+		}
+		
+		if (isEdit) {
+			getActionBar().setIcon(R.drawable.ic_done);
+			getActionBar().setDisplayHomeAsUpEnabled(false);
+			getActionBar().setTitle(null);
+			getActionBar().setHomeButtonEnabled(true);
+		}
+		
+		if(!isEdit && isDetailMode) {
+			getActionBar().setDisplayHomeAsUpEnabled(true);
+			getActionBar().setTitle(null);
+			getActionBar().setHomeButtonEnabled(true);
+		}
 
         // Fetch screen height and width, to use as our max size when loading images as this
         // activity runs full screen
@@ -108,13 +135,7 @@ public class NewEventActivity extends FragmentActivity implements NoticeDialogLi
 		mEventNoteText = (EditText) findViewById(R.id.edit_note_event);
 		mEventImage = (ImageView) findViewById(R.id.image_event);
 		
-		if (getIntent().getExtras() != null) {
-			event_id = getIntent().getExtras().getLong("event_id");
-			album_id = getIntent().getExtras().getLong("album_id");
-			isUpdate = true;
-		}
-		
-		if (isUpdate) {//then load all fields for the event
+		if (isDetailMode) {//then load all fields for the event
 			CursorLoader cursorLoaderEvent = new CursorLoader(this, 
 					 DadhooDB.Events.EVENTS_CONTENT_URI, 
 					 null, 
@@ -125,6 +146,13 @@ public class NewEventActivity extends FragmentActivity implements NoticeDialogLi
 			
 			if(cursorEvent.moveToFirst()){
 				mEventNoteText.setText(cursorEvent.getString(2));
+				if (!isEdit) {
+//					 getActionBar().setTitle(cursorAlbum.getString(1));
+					mEventNoteText.setCursorVisible(false);
+					mEventNoteText.setClickable(false);
+					mEventNoteText.setFocusable(false);
+					mEventNoteText.setFocusableInTouchMode(false);
+				 }
 				String pictureContentUriString = cursorEvent.getString(5);
 				if (pictureContentUriString != null) {
 					pictureContentUri = ContentUris.withAppendedId(DadhooDB.Pictures.PICTURE_CONTENT_URI, Long.parseLong(pictureContentUriString));
@@ -139,7 +167,7 @@ public class NewEventActivity extends FragmentActivity implements NoticeDialogLi
 		addAlbumsButton.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View arg0) {
-					if(isUpdate) {
+					if(isDetailMode) {
 						CursorLoader cursorLoaderGroupEvent = new CursorLoader(NewEventActivity.this,
 																		 DadhooDB.GroupEvents.GROUP_EVENTS_CONTENT_URI, 
 																		 null, 
@@ -148,7 +176,9 @@ public class NewEventActivity extends FragmentActivity implements NoticeDialogLi
 																		 null);
 						mCursorGroupEvent = cursorLoaderGroupEvent.loadInBackground();
 					}
-					DialogFragment listOfAlbum = AlbumListDialogFragment.newInstance(mCursorGroupEvent);
+					//If the event is created from an album select the album id otherwise use the cursor
+					DialogFragment listOfAlbum = album_id != 0 ? AlbumListDialogFragment.newInstance(album_id) : AlbumListDialogFragment.newInstance(mCursorGroupEvent);
+					
 					listOfAlbum.show(getSupportFragmentManager(), "ALBUM_LIST_DIALOG");
 				}
 		});
@@ -159,21 +189,39 @@ public class NewEventActivity extends FragmentActivity implements NoticeDialogLi
 		if (pictureFileUri != null) {
 			outState.putString("PICTURE_URI", pictureFileUri.toString());
 		}
+		if (pictureContentUri != null) {
+			outState.putString("PICTURE_URI", pictureContentUri.toString());
+		}
 		super.onSaveInstanceState(outState);
 	}
+	
+	
 	
 	@Override
 	protected void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
-		pictureFileUri = savedInstanceState != null ? Uri.parse(savedInstanceState.getString("PICTURE_URI")) : null;  
-		mImageFetcher.loadImage(pictureFileUri.getPath(), mEventImage);
+		if (savedInstanceState.getString("PICTURE_URI") != null) {
+			pictureFileUri = (savedInstanceState != null) 
+					? Uri.parse(savedInstanceState.getString("PICTURE_URI")) : null;  
+			if (isDetailMode) {
+				mImageFetcher.loadImage(Uri.parse(Utils.getPicturePath(pictureFileUri, this)), mEventImage);
+			} else {
+				mImageFetcher.loadImage(pictureFileUri.getPath(), mEventImage);
+			}
+		}
 	}
-
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.new_album, menu);
+		getMenuInflater().inflate(R.menu.crud_events_menu, menu);
+		if (isEdit) {
+			menu.removeItem(R.id.event_action_delete);
+			menu.removeItem(R.id.event_action_edit);
+			menu.removeItem(R.id.event_action_share);
+		} else {
+			menu.removeItem(R.id.event_action_camera);
+		}
+		
 		return true;
 	}
 
@@ -181,38 +229,75 @@ public class NewEventActivity extends FragmentActivity implements NoticeDialogLi
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case android.R.id.home:
-				if(isUpdate) {//Update an album and a picture if necessary
-					int rowAffected = updateEvent();
-					if(rowAffected != 0) {
-						Intent intent = new Intent(this, MainActivity.class);
-						intent.putExtra("event_list", true);
-						Toast.makeText(this, "updated", Toast.LENGTH_LONG).show();
-						startActivity(intent);
-					} else {
-						//album cannot be created
-					}
+				if(isDetailMode) {//Update an album and a picture if necessary
+					if(isEdit) {
+						int rowAffected = updateEvent();
+						if(rowAffected != 0) {
+							Intent intent = new Intent(this, MainActivity.class);
+							intent.putExtra("event_list", true);
+							Toast.makeText(this, "updated", Toast.LENGTH_LONG).show();
+							startActivity(intent);
+						} else {
+							Log.d(TAG, "album cannot be created");
+						}
+					} else {//go back to MainActivity
+						NavUtils.navigateUpFromSameTask(this);
+						return true;
+					}	
 				} else {//Insert
+					//in case a new event is created from an album create the event and the relationship with the album
+					if(!isDetailMode && mSelectedItems == null && album_id != 0) {
+						mSelectedItems = new ArrayList<Integer>();
+						mSelectedItems.add((int) album_id);  
+					}
 					int affectedRows = insertEvent();
 					if(affectedRows > 0) {
-						Intent intent = new Intent(this, EventsListActivity.class);
-//						intent.putExtra("event_list", true);
-						Toast.makeText(this, "Event created", Toast.LENGTH_LONG).show();
-						startActivity(intent);
+						if(album_id != 0) {//go back to the event list for this album
+							Intent intent = new Intent(this, EventsListActivity.class);
+			            	intent.putExtra("album_id", album_id);
+			            	intent.putExtra("album_title", album_title);
+			            	intent.putExtra("album_picture_id", album_picture_id);
+			            	intent.putExtra("album_timestamp", album_timestamp);
+			            	intent.putExtra("is_edit", true);
+			            	startActivity(intent);  
+						} else {//go to the event list
+							Intent intent = new Intent(this, EventsListActivity.class);
+							Toast.makeText(this, "Event created", Toast.LENGTH_LONG).show();
+							startActivity(intent);
+						}
 					} else {
 						Log.d(TAG, "album cannot be created");
 					}
 				}
-				return true;
-			case R.id.action_delete:
-				int rowAffected = deleteEvent();
-				if(rowAffected != 0) { 
-					Intent intent = new Intent(this, MainActivity.class);
-					intent.putExtra("albums_list", true);
-					Toast.makeText(this, "deleted", Toast.LENGTH_LONG).show();
-					startActivity(intent);
+				if(pictureFileUri != null) {
+					addPictureToGallery();
 				}
 				return true;
-			case R.id.action_camera:
+			case R.id.event_action_edit:	
+				Intent intentEdit = getIntent();//take the same intent to stay on the same activity
+				intentEdit.putExtra("is_edit", true);
+			    finish();
+			    startActivity(intentEdit);
+				return true;	
+			case R.id.event_action_delete:
+				int rowAffected = deleteEvent();
+				if(rowAffected > 0) {
+					if(album_id != 0) {//go back to the event list for this album
+						Intent intent = new Intent(this, EventsListActivity.class);
+		            	intent.putExtra("album_id", album_id);
+		            	intent.putExtra("album_title", album_title);
+		            	intent.putExtra("album_picture_id", album_picture_id);
+		            	intent.putExtra("album_timestamp", album_timestamp);
+		            	intent.putExtra("is_edit", true);
+		            	startActivity(intent);  
+					} else {//go to the event list
+						Intent intent = new Intent(this, EventsListActivity.class);
+						Toast.makeText(this, "Event deleted", Toast.LENGTH_LONG).show();
+						startActivity(intent);
+					}
+				}
+				return true;
+			case R.id.event_action_camera:
 				Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 				pictureFileUri = getOutputMediaFileUri(MEDIA_TYPE_IMAGE);
 				intent.putExtra(MediaStore.EXTRA_OUTPUT, pictureFileUri);
@@ -301,7 +386,7 @@ public class NewEventActivity extends FragmentActivity implements NoticeDialogLi
 					.withValue(DadhooDB.Events.MODIFIED, new Date().getTime())
 					.withValueBackReference(DadhooDB.Events.PICTURE_ID, 0)
 					.build());
-			if(mSelectedItems != null && !isUpdate) {
+			if(mSelectedItems != null && !isDetailMode) {
 				for(Integer element : mSelectedItems) {
 					ops.add(ContentProviderOperation.newInsert(DadhooDB.GroupEvents.GROUP_EVENTS_CONTENT_URI)
 							.withValue(DadhooDB.Events.MODIFIED, new Date().getTime())
@@ -337,8 +422,8 @@ public class NewEventActivity extends FragmentActivity implements NoticeDialogLi
 		// To be safe, you should check that the SDCard is mounted
 	    // using Environment.getExternalStorageState() before doing this.
 
-	    File mediaStorageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);//nvironment.DIRECTORY_PICTURES), "com.dadhoo.app");
-//	    File mediaStorageDirGallery = new File(Environment.getExternalStoragePublicDirectory(sEnvironment.DIRECTORY_PICTURES), "DADHOO");
+//	    File mediaStorageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);//nvironment.DIRECTORY_PICTURES), "com.dadhoo.app");
+	    File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "DADHOO");
 	    // This location works best if you want the created images to be shared
 	    // between applications and persist after your app has been uninstalled.
 
@@ -384,7 +469,7 @@ public class NewEventActivity extends FragmentActivity implements NoticeDialogLi
 	public void onDialogPositiveClick(DialogFragment dialog) {
 		AlbumListDialogFragment albumListDialog = (AlbumListDialogFragment) dialog;
 		mSelectedItems = albumListDialog.getmSelectedAlbumItems();
-		if(isUpdate) {
+		if(isDetailMode) {
 			removeAndInsertGroupEvent();
 		}
 	}
@@ -427,11 +512,44 @@ public class NewEventActivity extends FragmentActivity implements NoticeDialogLi
 		
 	}
 	
+	/**
+	 * Add the picture saved to the gallery invoking the media scanner
+	 */
+	private void addPictureToGallery() {
+	    Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+	    File f = new File(pictureFileUri.getPath());
+	    Uri contentUri = Uri.fromFile(f);
+	    mediaScanIntent.setData(contentUri);
+	    this.sendBroadcast(mediaScanIntent);
+	}
+	
 	@Override
     public void onBackPressed() {
-		super.onBackPressed();
+    	super.onBackPressed();
     	Intent intent = new Intent(this, MainActivity.class);
-    	intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    	intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
     	startActivity(intent);
     }
+	
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+         //disable the back button if the activity is in UPDATE view 
+    	 if (keyCode == KeyEvent.KEYCODE_BACK) {
+    		if(!isEdit) { 
+    			return true;
+    		} else if (isDetailMode) {//if not in edit mode then go back to the same activity passing the parameter again just to be sure
+    		 Intent intentEdit = getIntent();
+    		 intentEdit.putExtra("is_edit", false);
+    		 intentEdit.putExtra("is_update", true);
+    		 intentEdit.putExtra("album_id", album_id);
+    		 finish();
+    		 startActivity(intentEdit);
+    		} else {
+    			onBackPressed();
+    		}
+    	 }
+         //preventing default implementation previous to android.os.Build.VERSION_CODES.ECLAIR
+         return super.onKeyDown(keyCode, event);    
+    }
+	
 }

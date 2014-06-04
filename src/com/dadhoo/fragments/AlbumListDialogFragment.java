@@ -18,6 +18,8 @@ import android.util.Log;
 import com.dadhoo.database.DadhooDB;
 
 /**
+ * This Fragment is a Dialog used to link an event to one or more albums.
+ * 
  * @author gaecarme
  *
  */
@@ -50,6 +52,15 @@ public class AlbumListDialogFragment extends DialogFragment {
 		return fragment;
 	}
 
+	public static AlbumListDialogFragment newInstance(long album_id) {
+		Log.d(TAG, "New Instance");
+		AlbumListDialogFragment fragment = new AlbumListDialogFragment();
+		Bundle fragmentArgs = new Bundle();
+		fragmentArgs.putIntArray("SELECTED_ALBUMS_ID", new int[]{(int) album_id});
+		fragment.setArguments(fragmentArgs); 
+		return fragment;
+	}	
+	
 	public ArrayList<Integer> getmSelectedAlbumItems() {
 		return mSelectedAlbumItems;
 	}
@@ -169,5 +180,4 @@ public class AlbumListDialogFragment extends DialogFragment {
 
 		return alertDialogBuilder.create();
 	}
-
 }

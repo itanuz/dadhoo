@@ -83,7 +83,7 @@ public class AlbumListFragment extends Fragment {
 		            	intent.putExtra("album_title", album.getTitle());
 		            	intent.putExtra("album_picture_id", album.getPictureId());
 		            	intent.putExtra("album_timestamp", album.getTimestamp());
-		            	intent.putExtra("is_update", true);
+		            	intent.putExtra("is_edit", true);
 		            	startActivity(intent);
 	            	}
 	            }
@@ -118,15 +118,15 @@ public class AlbumListFragment extends Fragment {
 	            	if (useFragment) { //multi-pane
 	            		//update the fragment contained in the getActivity()
 	            	} else {//one-pane call the activity
-	            		Intent intent = new Intent(getActivity(), NewAlbumActivity.class);
-		     			startActivity(intent);
+	            		Intent intentNewAlbum = new Intent(getActivity(), NewAlbumActivity.class);
+	            		intentNewAlbum.putExtra("is_edit", true);
+		     			startActivity(intentNewAlbum);
 	            	}
 	            }
 	        });
 		}
 
         return gridView;
-    
 	}
 }
 

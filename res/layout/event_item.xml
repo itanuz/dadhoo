@@ -1,44 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
-    
-    <com.dadhoo.activities.view.SquareImageView
-        android:id="@+id/event_picture"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingTop="30dp"
-            android:paddingLeft="10dp"
-            android:paddingBottom="10dp"
-            android:paddingRight="10dp"
-        />
-    
-    
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/event_picture"
-        android:paddingBottom="20dp"
-            android:paddingLeft="20dp"
-            android:paddingRight="20dp"
-            android:paddingTop="5dp"
-        
-        android:orientation="horizontal" >
+    android:paddingBottom="20dp"
+    android:paddingLeft="20dp"
+    android:paddingRight="20dp"
+    android:paddingTop="20dp"
+	android:id="@+id/crud_event">
 
-        <TextView
-            android:id="@+id/event_note"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#65033000"
-            android:paddingBottom="20dp"
-            android:paddingLeft="20dp"
-            android:paddingRight="20dp"
-            android:paddingTop="5dp"
-            android:textColor="@android:color/white"
-            android:textSize="15dp" />
+	<com.dadhoo.activities.view.RelativeLayoutOutlined
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+	    android:orientation="vertical" >
 
-    </LinearLayout>
+	    <ImageView
+	        android:id="@+id/event_picture"
+	        android:layout_width="300dp"
+	        android:layout_height="300dp"
+	        android:layout_alignParentLeft="true"
+	        android:layout_alignParentRight="true"
+	        android:layout_alignParentTop="true" />
 
-    
+	    <View
+	        android:layout_width="fill_parent"
+	        android:layout_height="1dp"
+	        android:layout_alignBottom="@id/event_picture"
+	        android:background="@android:color/darker_gray" />
+	    
+	    <TextView
+	        android:id="@+id/event_note"
+	        android:layout_width="wrap_content"
+	        android:layout_height="100dp"
+	        android:layout_alignParentLeft="true"
+	        android:layout_alignParentRight="true"
+	        android:layout_below="@+id/event_picture"
+	        android:background="@null"
+	        android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+	        android:ems="10"
+	        android:gravity="top"
+	        android:textColor="@android:color/darker_gray"
+	        android:textStyle="normal" />
+
+	    <View
+	        android:id="@+id/view1"
+	        android:layout_width="fill_parent"
+	        android:layout_height="1dp"
+	        android:layout_alignBottom="@id/event_note"
+	        android:background="@android:color/holo_blue_light" />
+
+	    <ImageView
+	        android:id="@+id/imageView1"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentLeft="true"
+	        android:layout_alignTop="@+id/view1"
+	        android:src="@drawable/ic_action_share" />
+
+	    <ImageView
+	        android:id="@+id/imageView2"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_below="@+id/event_note"
+	        android:layout_marginLeft="18dp"
+	        android:layout_toRightOf="@+id/imageView1"
+	        android:src="@drawable/ic_collections_collection" />
+
+	    <TextView
+	        android:id="@+id/editText1"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentBottom="true"
+	       	android:layout_alignParentRight="true"
+	        android:layout_marginBottom="15dp"
+	        android:gravity="right"
+	        android:hint="today at 16:39"
+	        android:ems="10" >
+	    </TextView>
+
+	</com.dadhoo.activities.view.RelativeLayoutOutlined>
+
 </RelativeLayout>
