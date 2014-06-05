@@ -13,7 +13,9 @@ The application use SQLite to store locally data. No picture are stored into the
 
 Ho it works
 =======
-Clone the project and run the application. This is a good way to start with android. I hope can help.
+The application allowd users to take pictures save and group them into albums. An event is a picture with a description. An Album is an events container with a picture.
+
+Any feedback and contribution to the project is welcome! Then feel free to clone or fork the project. This is a good way to start with android. I hope can help.
 
 License
 =======
