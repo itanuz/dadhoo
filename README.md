@@ -11,7 +11,7 @@ When created an event can be linked to one or more albums.
 
 The application use SQLite to store locally data. No picture are stored into the database. The database contains only the reference to the physical picture file. Picture are stored into the phone gallery.
 
-Ho it works
+How it works
 =======
 The application allowd users to take pictures save and group them into albums. An event is a picture with a description. An Album is an events container with a picture.
 
