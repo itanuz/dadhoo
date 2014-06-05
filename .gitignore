@@ -1,3 +1,8 @@
+
+.classpath
+.project
 *.class
-/bin
-/gen
+*~
+.settings/
+bin/
+gen/

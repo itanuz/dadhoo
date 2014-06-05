@@ -545,7 +545,7 @@ public class NewEventActivity extends FragmentActivity implements NoticeDialogLi
 	@Override
     public void onBackPressed() {
     	super.onBackPressed();
-    	Intent intent = new Intent(this, MainActivity.class);
+    	Intent intent = new Intent(this, AlbumListActivity.class);
     	intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
     	startActivity(intent);
     }

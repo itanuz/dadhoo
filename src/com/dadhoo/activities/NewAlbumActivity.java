@@ -202,7 +202,7 @@ public class NewAlbumActivity extends Activity {
 					if(isEdit) {//update album
 						int rowAffected = updateAlbum();
 						if(rowAffected != 0) {
-							Intent intent = new Intent(this, MainActivity.class);
+							Intent intent = new Intent(this, AlbumListActivity.class);
 							intent.putExtra("albums_list", true);
 							Toast.makeText(this, "updated", Toast.LENGTH_LONG).show();
 							finish();
@@ -217,7 +217,7 @@ public class NewAlbumActivity extends Activity {
 				} else {//Insert
 					int affectedRows = insertAlbum();
 					if(affectedRows > 0) {
-						Intent intent = new Intent(this, MainActivity.class);
+						Intent intent = new Intent(this, AlbumListActivity.class);
 						intent.putExtra("albums_list", true);
 						Toast.makeText(this, "created", Toast.LENGTH_LONG).show();
 						startActivity(intent);
@@ -232,7 +232,7 @@ public class NewAlbumActivity extends Activity {
 			case R.id.album_action_delete:
 				int rowAffected = deleteAlbum();
 				if(rowAffected != 0) { 
-					Intent intent = new Intent(this, MainActivity.class);
+					Intent intent = new Intent(this, AlbumListActivity.class);
 				intent.putExtra("albums_list", true);
 				Toast.makeText(this, "deleted", Toast.LENGTH_LONG).show();
 				startActivity(intent);
@@ -435,7 +435,7 @@ public class NewAlbumActivity extends Activity {
 	@Override
     public void onBackPressed() {
     	super.onBackPressed();
-    	Intent intent = new Intent(this, MainActivity.class);
+    	Intent intent = new Intent(this, AlbumListActivity.class);
     	intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
     	startActivity(intent);
     }
