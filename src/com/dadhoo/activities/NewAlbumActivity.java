@@ -205,6 +205,7 @@ public class NewAlbumActivity extends Activity {
 							Intent intent = new Intent(this, MainActivity.class);
 							intent.putExtra("albums_list", true);
 							Toast.makeText(this, "updated", Toast.LENGTH_LONG).show();
+							finish();
 							startActivity(intent);
 						} else {
 							//album cannot be created
