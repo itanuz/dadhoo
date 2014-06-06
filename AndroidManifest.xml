@@ -16,8 +16,8 @@
     
     <uses-feature android:name="android.hardware.camera"/>
     
+<!--         android:name=".DadhooApplication" -->
     <application
-        android:name=".DadhooApplication"
         android:allowBackup="false"
         android:hardwareAccelerated="true"
         android:icon="@drawable/ic_launcher"

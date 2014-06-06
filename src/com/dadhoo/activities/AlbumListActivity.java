@@ -20,8 +20,6 @@ import android.widget.ListView;
 import com.dadhoo.R;
 import com.dadhoo.adapters.DrawerArrayAdapter;
 import com.dadhoo.fragments.AlbumListFragment;
-import com.parse.Parse;
-import com.parse.ParseObject;
 
 
 public class AlbumListActivity extends FragmentActivity {
@@ -37,13 +35,6 @@ public class AlbumListActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.drawer_layout);
-        
-        //test parse
-//        	  Parse.initialize(this, "duB5Cz0lEKhfuW6sl0aDYmYYXzRtOxPveVmvcZMk", "sy4ENhFv3e6zVNFCHyMb7SVcFdZpqXggCSz20T2g");
-        	  
-        	  ParseObject testObject = new ParseObject("TestObject");
-        	  testObject.put("foo", "bar");
-        	  testObject.saveInBackground();
 
         mTitle = getResources().getString(R.string.title_activity_albums_list);
         mDrawerTitle = getTitle();

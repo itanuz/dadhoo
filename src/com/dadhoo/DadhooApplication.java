@@ -28,7 +28,7 @@ public class DadhooApplication extends Application {
 		/*
 		 * Fill in this section with your Parse credentials
 		 */
-		Parse.initialize(this, "duB5Cz0lEKhfuW6sl0aDYmYYXzRtOxPveVmvcZMk", "sy4ENhFv3e6zVNFCHyMb7SVcFdZpqXggCSz20T2g");
+//		Parse.initialize(this, "", "");
 
 		/*
 		 * This app lets an anonymous user create and save photos of meals
@@ -43,20 +43,20 @@ public class DadhooApplication extends Application {
 		 * Learn more about the ParseUser class:
 		 * https://www.parse.com/docs/android_guide#users
 		 */
-		ParseUser.enableAutomaticUser();
+//		ParseUser.enableAutomaticUser();
 
 		/*
 		 * For more information on app security and Parse ACL:
 		 * https://www.parse.com/docs/android_guide#security-recommendations
 		 */
-		ParseACL defaultACL = new ParseACL();
+//		ParseACL defaultACL = new ParseACL();
 
 		/*
 		 * If you would like all objects to be private by default, remove this
 		 * line
 		 */
-		defaultACL.setPublicReadAccess(true);
+//		defaultACL.setPublicReadAccess(true);
 
-		ParseACL.setDefaultACL(defaultACL, true);
+//		ParseACL.setDefaultACL(defaultACL, true);
 	}
 }
